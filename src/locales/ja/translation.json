@@ -1,0 +1,40 @@
+{
+  "app": {
+    "title": "どこで食べる？",
+    "subtitle": "ルーレットを回して次の食事を見つけよう！",
+    "loading": "近くのレストランを探しています...",
+    "error": "おっと！何か問題が発生しました",
+    "tryAgain": "もう一度試す",
+    "restaurantsFound": "{{count}}件のレストランが見つかりました"
+  },
+  "filters": {
+    "title": "🔍 フィルター",
+    "rating": "評価",
+    "distance": "距離",
+    "cuisine": "料理",
+    "openNow": "営業中",
+    "minimumRating": "最低評価",
+    "maximumDistance": "最大距離",
+    "cuisineTypes": "料理の種類",
+    "openNowOnly": "営業中のみ",
+    "clearAll": "すべてクリア",
+    "any": "すべて"
+  },
+  "wheel": {
+    "spin": "回す",
+    "spinning": "回転中...",
+    "noRestaurants": "現在のフィルターでレストランが見つかりません",
+    "adjustCriteria": "検索条件を調整してみてください",
+    "resultTitle": "🎉 ここで食べましょう：",
+    "closedWarning": "⚠️ このレストランは閉店している可能性があります",
+    "directions": "🗺️ 道順",
+    "viewOnMaps": "📍 地図で見る"
+  },
+  "location": {
+    "notSupported": "このブラウザは位置情報をサポートしていません",
+    "accessDenied": "位置情報のアクセスが拒否されました。位置情報サービスを有効にしてください。",
+    "unavailable": "位置情報が利用できません。",
+    "timeout": "位置情報の取得がタイムアウトしました。",
+    "unknownError": "位置情報の取得中に不明なエラーが発生しました。"
+  }
+}

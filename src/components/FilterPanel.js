@@ -1,0 +1,152 @@
+import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import RestaurantService from '../services/RestaurantService';
+import './FilterPanel.css';
+
+const FilterPanel = ({ filters, onFilterChange, restaurants }) => {
+  const { t } = useTranslation();
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [cuisineTypes, setCuisineTypes] = useState([]);
+
+  useEffect(() => {
+    if (restaurants && restaurants.length > 0) {
+      const availableCuisines = RestaurantService.getCuisineTypes(restaurants);
+      setCuisineTypes(availableCuisines);
+    }
+  }, [restaurants]);
+
+  const handleRatingChange = (rating) => {
+    onFilterChange({ ...filters, minRating: rating });
+  };
+
+  const handleDistanceChange = (distance) => {
+    onFilterChange({ ...filters, maxDistance: distance });
+  };
+
+  const handleCuisineToggle = (cuisine) => {
+    const updatedCuisines = filters.cuisineTypes.includes(cuisine)
+      ? filters.cuisineTypes.filter(c => c !== cuisine)
+      : [...filters.cuisineTypes, cuisine];
+    
+    onFilterChange({ ...filters, cuisineTypes: updatedCuisines });
+  };
+
+  const handleOpenNowToggle = () => {
+    onFilterChange({ ...filters, openNow: !filters.openNow });
+  };
+
+  const clearAllFilters = () => {
+    onFilterChange({
+      minRating: 3,
+      maxDistance: 1000,
+      cuisineTypes: [],
+      openNow: false
+    });
+  };
+
+  const formatDistance = (meters) => {
+    if (meters < 1000) return `${meters}m`;
+    return `${meters / 1000}km`;
+  };
+
+  const hasActiveFilters = filters.minRating > 3 || 
+                          filters.maxDistance < 1000 || 
+                          filters.cuisineTypes.length > 0 || 
+                          filters.openNow;
+
+  return (
+    <div className="filter-panel">
+      <button 
+        className="filter-toggle"
+        onClick={() => setIsExpanded(!isExpanded)}
+      >
+        <span>{t('filters.title')}</span>
+        {hasActiveFilters && <span className="filter-badge">{
+          [
+            filters.minRating > 0 && t('filters.rating'),
+            filters.maxDistance < 5000 && t('filters.distance'), 
+            filters.cuisineTypes.length > 0 && t('filters.cuisine'),
+            filters.openNow && t('filters.openNow')
+          ].filter(Boolean).length
+        }</span>}
+        <span className={`arrow ${isExpanded ? 'expanded' : ''}`}>▼</span>
+      </button>
+
+      {isExpanded && (
+        <div className="filter-content">
+          <div className="filter-section">
+            <h3>{t('filters.minimumRating')}</h3>
+            <div className="rating-filters">
+              {[0, 3, 3.5, 4, 4.5].map(rating => (
+                <button
+                  key={rating}
+                  className={`filter-button ${filters.minRating === rating ? 'active' : ''}`}
+                  onClick={() => handleRatingChange(rating)}
+                >
+                  {rating === 0 ? t('filters.any') : `${rating}★+`}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="filter-section">
+            <h3>{t('filters.maximumDistance')}</h3>
+            <div className="distance-filters">
+              {[500, 1000, 2000, 5000].map(distance => (
+                <button
+                  key={distance}
+                  className={`filter-button ${filters.maxDistance === distance ? 'active' : ''}`}
+                  onClick={() => handleDistanceChange(distance)}
+                >
+                  {formatDistance(distance)}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="filter-section">
+            <h3>{t('filters.cuisineTypes')}</h3>
+            <div className="cuisine-filters">
+              {cuisineTypes.map(cuisine => (
+                <button
+                  key={cuisine}
+                  className={`filter-button cuisine-button ${
+                    filters.cuisineTypes.includes(cuisine) ? 'active' : ''
+                  }`}
+                  onClick={() => handleCuisineToggle(cuisine)}
+                >
+                  {cuisine.charAt(0).toUpperCase() + cuisine.slice(1)}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="filter-section">
+            <label className="toggle-label">
+              <input
+                type="checkbox"
+                checked={filters.openNow}
+                onChange={handleOpenNowToggle}
+              />
+              <span className="toggle-slider"></span>
+              <span className="toggle-text">{t('filters.openNowOnly')}</span>
+            </label>
+          </div>
+
+          {hasActiveFilters && (
+            <div className="filter-section">
+              <button 
+                className="clear-filters-button"
+                onClick={clearAllFilters}
+              >
+                {t('filters.clearAll')}
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default FilterPanel;

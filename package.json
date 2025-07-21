@@ -1,0 +1,43 @@
+{
+  "name": "where-to-eat",
+  "version": "1.0.0",
+  "description": "A web/mobile app with prize wheel to help choose restaurants",
+  "main": "index.js",
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "keywords": [
+    "restaurant",
+    "food",
+    "location",
+    "prize wheel"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "i18next": "^25.3.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-i18next": "^15.6.0",
+    "react-scripts": "5.0.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

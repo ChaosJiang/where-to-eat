@@ -1,0 +1,40 @@
+{
+  "app": {
+    "title": "Where to Eat?",
+    "subtitle": "Spin the wheel to discover your next meal!",
+    "loading": "Finding restaurants near you...",
+    "error": "Oops! Something went wrong",
+    "tryAgain": "Try Again",
+    "restaurantsFound": "{{count}} restaurants found"
+  },
+  "filters": {
+    "title": "🔍 Filters",
+    "rating": "Rating",
+    "distance": "Distance",
+    "cuisine": "Cuisine",
+    "openNow": "Open Now",
+    "minimumRating": "Minimum Rating",
+    "maximumDistance": "Maximum Distance",
+    "cuisineTypes": "Cuisine Types",
+    "openNowOnly": "Open Now Only",
+    "clearAll": "Clear All Filters",
+    "any": "Any"
+  },
+  "wheel": {
+    "spin": "SPIN",
+    "spinning": "SPINNING...",
+    "noRestaurants": "No restaurants found with current filters",
+    "adjustCriteria": "Try adjusting your search criteria",
+    "resultTitle": "🎉 You should eat at:",
+    "closedWarning": "⚠️ This restaurant might be closed",
+    "directions": "🗺️ Directions",
+    "viewOnMaps": "📍 View on Maps"
+  },
+  "location": {
+    "notSupported": "Geolocation is not supported by this browser",
+    "accessDenied": "Location access denied. Please enable location services.",
+    "unavailable": "Location information is unavailable.",
+    "timeout": "Location request timed out.",
+    "unknownError": "An unknown error occurred while retrieving location."
+  }
+}

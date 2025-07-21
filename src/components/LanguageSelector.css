@@ -1,0 +1,40 @@
+.language-selector {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  justify-content: center;
+}
+
+.lang-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  font-size: 0.9rem;
+}
+
+.lang-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.lang-btn.active {
+  background: rgba(74, 144, 226, 0.8);
+  border-color: rgba(74, 144, 226, 1);
+  box-shadow: 0 2px 8px rgba(74, 144, 226, 0.3);
+}
+
+.lang-btn .flag {
+  font-size: 1rem;
+}
+
+.lang-btn .name {
+  font-weight: 500;
+}
