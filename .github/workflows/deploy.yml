@@ -17,21 +17,6 @@ permissions:
 
 
 jobs:
-  AssumeRoleAndCallIdentity:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Git clone the repository
-        uses: actions/checkout@v4
-      - name: configure aws credentials
-        uses: aws-actions/configure-aws-credentials@v1.7.0
-        with:
-          role-to-assume: arn:aws:iam::283033597888:role/GitHubAction-where-to-eat-openid-connect-role
-          role-session-name: GitHub_to_AWS_via_FederatedOIDC
-          aws-region: ${{ env.AWS_REGION }}
-      # Hello from AWS: WhoAmI
-      - name: Sts GetCallerIdentity
-        run: |
-          aws sts get-caller-identity
   build-and-deploy:
     runs-on: ubuntu-latest
     
@@ -39,6 +24,13 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1.7.0
+      with:
+        role-to-assume: arn:aws:iam::283033597888:role/GitHubAction-where-to-eat-openid-connect-role
+        role-session-name: GitHub_to_AWS_via_FederatedOIDC
+        aws-region: ${{ env.AWS_REGION }}
+        
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
@@ -47,6 +39,10 @@ jobs:
         
     - name: Install dependencies
       run: npm ci --legacy-peer-deps
+
+    - name: Sts GetCallerIdentity
+      run: |
+        aws sts get-caller-identity
         
     - name: Get Google Maps API Key from AWS Parameter Store
       run: |
