@@ -8,7 +8,7 @@ on:
 env:
   AWS_REGION: "ap-northeast-1" #Change to reflect your Region
   S3_BUCKET_NAME: "where-to-eat-app" #Your S3 bucket name
-  CLOUDFRONT_DISTRIBUTION_ID: "E1EXAMPLEID" #Your CloudFront distribution ID
+  CLOUDFRONT_DISTRIBUTION_ID: "E35X4OLKTI4L6E" #Your CloudFront distribution ID
 
 # Permission can be added at job level or workflow level    
 permissions:
