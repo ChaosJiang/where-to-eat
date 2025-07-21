@@ -2,81 +2,7 @@ import LocationService from './LocationService';
 
 class RestaurantService {
   static GOOGLE_MAPS_API_KEY = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
-  static isGoogleMapsLoaded = false;
-  static placesService = null;
-  static loadingPromise = null;
 
-  static async loadGoogleMaps() {
-    if (!this.GOOGLE_MAPS_API_KEY) {
-      console.log('No Google Maps API key found, using mock data');
-      return false;
-    }
-
-    // Return existing promise if already loading
-    if (this.loadingPromise) {
-      return this.loadingPromise;
-    }
-
-    // Check if already loaded
-    if (this.isGoogleMapsLoaded && window.google && window.google.maps && window.google.maps.places) {
-      return true;
-    }
-
-    // Check if Google Maps is already available
-    if (window.google && window.google.maps && window.google.maps.places) {
-      this.isGoogleMapsLoaded = true;
-      return true;
-    }
-
-    console.log('Loading Google Maps API with key:', this.GOOGLE_MAPS_API_KEY.substring(0, 10) + '...');
-
-    // Create loading promise
-    this.loadingPromise = new Promise((resolve) => {
-      // Check if script is already loading
-      const existingScript = document.querySelector('script[src*="maps.googleapis.com"]');
-      if (existingScript) {
-        const checkLoaded = () => {
-          if (window.google && window.google.maps && window.google.maps.places) {
-            this.isGoogleMapsLoaded = true;
-            this.loadingPromise = null;
-            resolve(true);
-          } else {
-            setTimeout(checkLoaded, 100);
-          }
-        };
-        checkLoaded();
-        return;
-      }
-
-      // Create unique callback name to avoid conflicts
-      const callbackName = 'initGoogleMaps_' + Date.now();
-      
-      window[callbackName] = () => {
-        this.isGoogleMapsLoaded = true;
-        this.loadingPromise = null;
-        console.log('Google Maps API loaded successfully');
-        delete window[callbackName]; // Clean up callback
-        resolve(true);
-      };
-
-      const script = document.createElement('script');
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${this.GOOGLE_MAPS_API_KEY}&libraries=places&callback=${callbackName}`;
-      script.async = true;
-      script.defer = true;
-      script.id = 'google-maps-script';
-      
-      script.onerror = () => {
-        console.error('Failed to load Google Maps API');
-        this.loadingPromise = null;
-        delete window[callbackName]; // Clean up callback
-        resolve(false);
-      };
-
-      document.head.appendChild(script);
-    });
-
-    return this.loadingPromise;
-  }
 
   static getGoogleMapsLanguage(i18nLanguage) {
     // Map i18n language codes to Google Maps supported language codes
@@ -144,64 +70,62 @@ class RestaurantService {
   }
 
   static async searchNearby(location, radius = 5000, language = 'en', cuisineTypes = []) {
-    const isLoaded = await this.loadGoogleMaps();
-    
-    if (!isLoaded) {
+    // Check if API key is available
+    if (!this.GOOGLE_MAPS_API_KEY) {
+      console.log('No Google Maps API key found, using mock data');
       return this.getMockRestaurants(location);
     }
 
-    return new Promise((resolve) => {
-      try {
-        const map = new window.google.maps.Map(document.createElement('div'));
-        const service = new window.google.maps.places.PlacesService(map);
-        
-        const googleMapsLanguage = this.getGoogleMapsLanguage(language);
-        const searchTypes = this.mapCuisineTypesToGooglePlacesTypes(cuisineTypes);
-        
-        const allResults = [];
-        let completedSearches = 0;
-        
-        const handleSearchComplete = () => {
-          completedSearches++;
-          if (completedSearches === searchTypes.length) {
-            // Remove duplicates based on place_id
-            const uniqueResults = [];
-            const seenIds = new Set();
-            
-            allResults.forEach(place => {
-              if (!seenIds.has(place.place_id)) {
-                seenIds.add(place.place_id);
-                uniqueResults.push(place);
-              }
-            });
-            
-            const formattedResults = uniqueResults.map(place => this.formatRestaurantData(place, location));
-            resolve(formattedResults);
+    try {
+      const googleMapsLanguage = this.getGoogleMapsLanguage(language);
+      const searchTypes = this.mapCuisineTypesToGooglePlacesTypes(cuisineTypes);
+      
+      // Prepare request body for new Nearby Search API
+      const requestBody = {
+        includedTypes: searchTypes,
+        locationRestriction: {
+          circle: {
+            center: {
+              latitude: location.latitude,
+              longitude: location.longitude
+            },
+            radius: radius
           }
-        };
-        
-        searchTypes.forEach(type => {
-          const request = {
-            location: new window.google.maps.LatLng(location.latitude, location.longitude),
-            radius: radius,
-            type: type,
-            language: googleMapsLanguage
-          };
+        },
+        languageCode: googleMapsLanguage,
+        maxResultCount: 20
+      };
 
-          service.nearbySearch(request, (results, status) => {
-            if (status === window.google.maps.places.PlacesServiceStatus.OK) {
-              allResults.push(...results);
-            } else if (status !== window.google.maps.places.PlacesServiceStatus.ZERO_RESULTS) {
-              console.error(`Places API error for type ${type}:`, status);
-            }
-            handleSearchComplete();
-          });
-        });
-      } catch (error) {
-        console.error('Error with Google Maps Places API:', error);
-        resolve(this.getMockRestaurants(location));
+      // Make request to new Nearby Search API
+      const response = await fetch('https://places.googleapis.com/v1/places:searchNearby', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Goog-Api-Key': this.GOOGLE_MAPS_API_KEY,
+          'X-Goog-FieldMask': 'places.id,places.displayName,places.formattedAddress,places.location,places.rating,places.priceLevel,places.types,places.currentOpeningHours'
+        },
+        body: JSON.stringify(requestBody)
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
-    });
+
+      const data = await response.json();
+      
+      if (!data.places || data.places.length === 0) {
+        console.log('No places found, using mock data');
+        return this.getMockRestaurants(location);
+      }
+
+      // Format results for our app
+      const formattedResults = data.places.map(place => this.formatNewApiRestaurantData(place, location));
+      return formattedResults;
+      
+    } catch (error) {
+      console.error('Error with new Places API:', error);
+      return this.getMockRestaurants(location);
+    }
   }
 
   static extractCuisineTypes(types) {
@@ -295,6 +219,37 @@ class RestaurantService {
       isOpen: place.opening_hours ? place.opening_hours.open_now : true,
       photoUrl: place.photos && place.photos.length > 0 
         ? place.photos[0].getUrl({ maxWidth: 400, maxHeight: 300 })
+        : null,
+      location: {
+        lat: lat,
+        lng: lng
+      }
+    };
+  }
+
+  static formatNewApiRestaurantData(place, userLocation) {
+    const lat = place.location.latitude;
+    const lng = place.location.longitude;
+    
+    const distance = LocationService.calculateDistance(
+      userLocation.latitude,
+      userLocation.longitude,
+      lat,
+      lng
+    );
+
+    return {
+      id: place.id,
+      name: place.displayName?.text || 'Unknown Restaurant',
+      rating: place.rating || 0,
+      distance: distance,
+      formattedDistance: LocationService.formatDistance(distance),
+      address: place.formattedAddress || '',
+      priceLevel: place.priceLevel || 0,
+      cuisineTypes: this.extractCuisineTypes(place.types || []),
+      isOpen: place.currentOpeningHours ? place.currentOpeningHours.openNow : true,
+      photoUrl: place.photos && place.photos.length > 0 
+        ? `https://places.googleapis.com/v1/${place.photos[0].name}/media?maxWidthPx=400&maxHeightPx=300&key=${this.GOOGLE_MAPS_API_KEY}`
         : null,
       location: {
         lat: lat,

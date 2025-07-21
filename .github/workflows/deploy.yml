@@ -1,0 +1,73 @@
+name: Deploy to AWS S3 and CloudFront
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+env:
+  AWS_REGION: "ap-northeast-1" #Change to reflect your Region
+  S3_BUCKET_NAME: "where-to-eat-app" #Your S3 bucket name
+  CLOUDFRONT_DISTRIBUTION_ID: "E1EXAMPLEID" #Your CloudFront distribution ID
+
+# Permission can be added at job level or workflow level    
+permissions:
+      id-token: write   # This is required for requesting the JWT
+      contents: read    # This is required for actions/checkout
+
+
+jobs:
+  AssumeRoleAndCallIdentity:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git clone the repository
+        uses: actions/checkout@v4
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v1.7.0
+        with:
+          role-to-assume: arn:aws:iam::283033597888:role/GitHubAction-where-to-eat-openid-connect-role
+          role-session-name: GitHub_to_AWS_via_FederatedOIDC
+          aws-region: ${{ env.AWS_REGION }}
+      # Hello from AWS: WhoAmI
+      - name: Sts GetCallerIdentity
+        run: |
+          aws sts get-caller-identity
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+        
+    - name: Get Google Maps API Key from AWS Parameter Store
+      run: |
+        GOOGLE_MAPS_API_KEY=$(aws ssm get-parameter --name "/where-to-eat/REACT_APP_GOOGLE_MAPS_API_KEY" --with-decryption --query "Parameter.Value" --output text)
+        echo "REACT_APP_GOOGLE_MAPS_API_KEY=$GOOGLE_MAPS_API_KEY" >> $GITHUB_ENV
+        
+    - name: Build application
+      run: npm run build
+        
+    - name: Deploy to S3
+      run: |
+        aws s3 sync build/ s3://${{ env.S3_BUCKET_NAME }} --delete --cache-control "public, max-age=31536000" --exclude "*.html" --exclude "service-worker.js" --exclude "manifest.json"
+        aws s3 sync build/ s3://${{ env.S3_BUCKET_NAME }} --delete --cache-control "public, max-age=0, must-revalidate" --include "*.html" --include "service-worker.js" --include "manifest.json"
+        
+    - name: Invalidate CloudFront
+      run: |
+        aws cloudfront create-invalidation --distribution-id ${{ env.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
+        
+    - name: Display deployment info
+      run: |
+        echo "🚀 Deployment completed successfully!"
+        echo "📦 S3 Bucket: ${{ env.S3_BUCKET_NAME }}"
+        echo "🌐 CloudFront Distribution: ${{ env.CLOUDFRONT_DISTRIBUTION_ID }}"
+        echo "Build completed at: $(date)"
