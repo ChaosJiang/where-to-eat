@@ -40,7 +40,7 @@ const FilterPanel = ({ filters, onFilterChange, restaurants }) => {
       minRating: 3,
       maxDistance: 1000,
       cuisineTypes: [],
-      openNow: false
+      openNow: true
     });
   };
 
@@ -52,7 +52,7 @@ const FilterPanel = ({ filters, onFilterChange, restaurants }) => {
   const hasActiveFilters = filters.minRating > 3 || 
                           filters.maxDistance < 1000 || 
                           filters.cuisineTypes.length > 0 || 
-                          filters.openNow;
+                          filters.openNow !== true;
 
   return (
     <div className="filter-panel">
@@ -63,10 +63,10 @@ const FilterPanel = ({ filters, onFilterChange, restaurants }) => {
         <span>{t('filters.title')}</span>
         {hasActiveFilters && <span className="filter-badge">{
           [
-            filters.minRating > 0 && t('filters.rating'),
-            filters.maxDistance < 5000 && t('filters.distance'), 
-            filters.cuisineTypes.length > 0 && t('filters.cuisine'),
-            filters.openNow && t('filters.openNow')
+            filters.minRating > 3,
+            filters.maxDistance < 1000, 
+            filters.cuisineTypes.length > 0,
+            filters.openNow !== true
           ].filter(Boolean).length
         }</span>}
         <span className={`arrow ${isExpanded ? 'expanded' : ''}`}>▼</span>
