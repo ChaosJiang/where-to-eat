@@ -17,44 +17,35 @@ class RestaurantService {
   static mapCuisineTypesToGooglePlacesTypes(cuisineTypes) {
     // Map UI cuisine filter names to Google Places API types
     const cuisineToTypeMap = {
-      'american': ['restaurant'],
-      'chinese': ['restaurant'],
-      'indian': ['restaurant'],
-      'italian': ['restaurant'],
-      'japanese': ['restaurant'],
-      'korean': ['restaurant'],
-      'mexican': ['restaurant'],
-      'thai': ['restaurant'],
-      'french': ['restaurant'],
-      'greek': ['restaurant'],
-      'mediterranean': ['restaurant'],
-      'middle eastern': ['restaurant'],
-      'spanish': ['restaurant'],
-      'vietnamese': ['restaurant'],
-      'turkish': ['restaurant'],
-      'seafood': ['restaurant'],
-      'steak': ['restaurant'],
-      'sushi': ['restaurant'],
-      'pizza': ['restaurant'],
-      'hamburger': ['restaurant'],
-      'sandwich': ['restaurant'],
-      'breakfast': ['restaurant'],
-      'brunch': ['restaurant'],
-      'lunch': ['restaurant'],
-      'dinner': ['restaurant'],
-      'fast food': ['restaurant'],
-      'fine dining': ['restaurant'],
-      'family': ['restaurant'],
-      'casual dining': ['restaurant'],
+      'american': ['american_restaurant'],
+      'chinese': ['chinese_restaurant'],
+      'indian': ['indian_restaurant'],
+      'italian': ['italian_restaurant'],
+      'japanese': ['japanese_restaurant'],
+      'korean': ['korean_restaurant'],
+      'mexican': ['mexican_restaurant'],
+      'thai': ['thai_restaurant'],
+      'french': ['french_restaurant'],
+      'greek': ['greek_restaurant'],
+      'mediterranean': ['mediterranean_restaurant'],
+      'middle eastern': ['middle_eastern_restaurant'],
+      'vietnamese': ['vietnamese_restaurant'],
+      'turkish': ['turkish_restaurant'],
+      'seafood': ['seafood_restaurant'],
+      'steak': ['steak_house'],
+      'sushi': ['sushi_restaurant'],
+      'pizza': ['pizza_restaurant'],
+      'hamburger': ['hamburger_restaurant'],
+      'fast food': ['fast_food_restaurant'],
       'bakery': ['bakery'],
       'cafe': ['cafe'],
       'bar': ['bar'],
-      'food': ['restaurant', 'cafe', 'bakery']
+      'food': ['restaurant']
     };
 
     if (!cuisineTypes || cuisineTypes.length === 0) {
       // If no specific cuisine types selected, search all food establishment types
-      return ['restaurant', 'cafe', 'bakery', 'meal_delivery', 'meal_takeaway'];
+      return ['restaurant', 'meal_delivery', 'meal_takeaway'];
     }
 
     const placesTypes = new Set();
@@ -131,22 +122,17 @@ class RestaurantService {
   static extractCuisineTypes(types) {
     // Define food/cuisine related types that should be included
     const foodTypes = [
-      'bakery', 'bar', 'cafe', 'meal_delivery', 'meal_takeaway', 
-      'night_club', 'restaurant', 'food'
+      'cafe', 'meal_delivery', 'meal_takeaway', 'restaurant', 'food'
     ];
     
     // Define actual cuisine types we want to show
     const cuisineTypes = [
-      'american_restaurant', 'chinese_restaurant', 'indian_restaurant', 
+      'chinese_restaurant', 'indian_restaurant', 
       'italian_restaurant', 'japanese_restaurant', 'korean_restaurant',
       'mexican_restaurant', 'thai_restaurant', 'french_restaurant',
-      'greek_restaurant', 'mediterranean_restaurant', 'middle_eastern_restaurant',
-      'spanish_restaurant', 'vietnamese_restaurant', 'turkish_restaurant',
+      'vietnamese_restaurant', 'turkish_restaurant',
       'seafood_restaurant', 'steak_house', 'sushi_restaurant',
-      'pizza_restaurant', 'hamburger_restaurant', 'sandwich_shop',
-      'breakfast_restaurant', 'brunch_restaurant', 'lunch_restaurant',
-      'dinner_restaurant', 'fast_food_restaurant', 'fine_dining_restaurant',
-      'family_restaurant', 'casual_dining_restaurant'
+      'fast_food_restaurant', 'family_restaurant',
     ];
 
     // Filter and format cuisine types
@@ -157,7 +143,7 @@ class RestaurantService {
       // Include general food types but exclude non-food places
       if (foodTypes.includes(type)) return true;
       
-      // Exclude common non-food establishment types
+      // Exclude common non-food establishment types and unwanted cuisine types
       const excludeTypes = [
         'establishment', 'point_of_interest', 'store', 'shopping_mall',
         'movie_theater', 'gas_station', 'bank', 'atm', 'pharmacy',
@@ -179,7 +165,9 @@ class RestaurantService {
         'administrative_area_level_2', 'administrative_area_level_3',
         'country', 'locality', 'postal_code', 'route', 'street_address',
         'sublocality', 'sublocality_level_1', 'premise', 'subpremise',
-        'natural_feature', 'neighborhood', 'political'
+        'natural_feature', 'neighborhood', 'political',
+        // Exclude unwanted cuisine/establishment types
+        'bakery', 'bar', 'night_club', 'donut_shop', 'health'
       ];
       
       return !excludeTypes.includes(type);

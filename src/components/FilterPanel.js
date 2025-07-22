@@ -1,19 +1,28 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import RestaurantService from '../services/RestaurantService';
 import './FilterPanel.css';
 
-const FilterPanel = ({ filters, onFilterChange, restaurants }) => {
+const FilterPanel = ({ filters, onFilterChange }) => {
   const { t } = useTranslation();
   const [isExpanded, setIsExpanded] = useState(false);
-  const [cuisineTypes, setCuisineTypes] = useState([]);
-
-  useEffect(() => {
-    if (restaurants && restaurants.length > 0) {
-      const availableCuisines = RestaurantService.getCuisineTypes(restaurants);
-      setCuisineTypes(availableCuisines);
-    }
-  }, [restaurants]);
+  
+  // Define fixed cuisine types
+  const cuisineTypes = [
+    'japanese',
+    'chinese', 
+    'thai',
+    'korean',
+    'indian',
+    'vietnamese',
+    'steak',
+    'fast food',
+    'italian',
+    'mexican',
+    'french',
+    'sushi',
+    'seafood',
+    'pizza'
+  ];
 
   const handleRatingChange = (rating) => {
     onFilterChange({ ...filters, minRating: rating });
