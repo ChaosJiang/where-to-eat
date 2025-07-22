@@ -4,7 +4,7 @@ import './FilterPanel.css';
 
 const FilterPanel = ({ filters, onFilterChange }) => {
   const { t } = useTranslation();
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(true);
   
   // Define fixed cuisine types
   const cuisineTypes = [
