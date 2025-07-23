@@ -16,7 +16,7 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [filters, setFilters] = useState({
-    minRating: 3,
+    minRating: 3.5,
     maxDistance: 1000,
     cuisineTypes: [],
     openNow: true
@@ -26,24 +26,24 @@ function App() {
     initializeApp();
   }, []);
 
-  // Refresh restaurant data when language or cuisine filters change
+  // Refresh restaurant data when language, cuisine filters, or search radius change
   useEffect(() => {
     if (location) {
       fetchRestaurants(location, filters.cuisineTypes);
     }
-  }, [i18n.language, location, filters.cuisineTypes]);
+  }, [i18n.language, location, filters.cuisineTypes, filters.maxDistance]);
 
   useEffect(() => {
     if (restaurants.length > 0) {
       applyFilters();
     }
-  }, [restaurants, filters.minRating, filters.maxDistance, filters.openNow]);
+  }, [restaurants, filters.minRating, filters.openNow]);
 
   const fetchRestaurants = async (userLocation, cuisineFilters = []) => {
     try {
       const nearbyRestaurants = await RestaurantService.searchNearby(
         userLocation, 
-        5000, 
+        filters.maxDistance, 
         i18n.language,
         cuisineFilters
       );

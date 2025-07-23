@@ -33,9 +33,10 @@ const FilterPanel = ({ filters, onFilterChange }) => {
   };
 
   const handleCuisineToggle = (cuisine) => {
+    // Only allow one cuisine selection at a time
     const updatedCuisines = filters.cuisineTypes.includes(cuisine)
-      ? filters.cuisineTypes.filter(c => c !== cuisine)
-      : [...filters.cuisineTypes, cuisine];
+      ? [] // Deselect if already selected
+      : [cuisine]; // Replace current selection with new one
     
     onFilterChange({ ...filters, cuisineTypes: updatedCuisines });
   };
