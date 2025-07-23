@@ -36,5 +36,21 @@
     "unavailable": "位置情報が利用できません。",
     "timeout": "位置情報の取得がタイムアウトしました。",
     "unknownError": "位置情報の取得中に不明なエラーが発生しました。"
+  },
+  "cuisineTypes": {
+    "japanese": "和食",
+    "chinese": "中華料理",
+    "thai": "タイ料理",
+    "korean": "韓国料理",
+    "indian": "インド料理",
+    "vietnamese": "ベトナム料理",
+    "steak": "ステーキ",
+    "fast food": "ファストフード",
+    "italian": "イタリア料理",
+    "mexican": "メキシコ料理",
+    "french": "フランス料理",
+    "sushi": "寿司",
+    "seafood": "シーフード",
+    "pizza": "ピザ"
   }
 }

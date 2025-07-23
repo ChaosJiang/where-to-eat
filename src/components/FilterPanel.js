@@ -125,7 +125,7 @@ const FilterPanel = ({ filters, onFilterChange }) => {
                   }`}
                   onClick={() => handleCuisineToggle(cuisine)}
                 >
-                  {cuisine.charAt(0).toUpperCase() + cuisine.slice(1)}
+                  {t(`cuisineTypes.${cuisine}`)}
                 </button>
               ))}
             </div>

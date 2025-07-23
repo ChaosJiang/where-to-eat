@@ -36,5 +36,21 @@
     "unavailable": "位置信息不可用。",
     "timeout": "位置请求超时。",
     "unknownError": "获取位置时发生未知错误。"
+  },
+  "cuisineTypes": {
+    "japanese": "日本料理",
+    "chinese": "中国菜",
+    "thai": "泰国菜",
+    "korean": "韩国菜",
+    "indian": "印度菜",
+    "vietnamese": "越南菜",
+    "steak": "牛排",
+    "fast food": "快餐",
+    "italian": "意大利菜",
+    "mexican": "墨西哥菜",
+    "french": "法国菜",
+    "sushi": "寿司",
+    "seafood": "海鲜",
+    "pizza": "披萨"
   }
 }

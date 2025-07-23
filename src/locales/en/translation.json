@@ -36,5 +36,21 @@
     "unavailable": "Location information is unavailable.",
     "timeout": "Location request timed out.",
     "unknownError": "An unknown error occurred while retrieving location."
+  },
+  "cuisineTypes": {
+    "japanese": "Japanese",
+    "chinese": "Chinese",
+    "thai": "Thai",
+    "korean": "Korean",
+    "indian": "Indian",
+    "vietnamese": "Vietnamese",
+    "steak": "Steak",
+    "fast food": "Fast Food",
+    "italian": "Italian",
+    "mexican": "Mexican",
+    "french": "French",
+    "sushi": "Sushi",
+    "seafood": "Seafood",
+    "pizza": "Pizza"
   }
 }
