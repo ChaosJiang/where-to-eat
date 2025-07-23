@@ -2,26 +2,6 @@
   margin-bottom: 20px;
 }
 
-.filter-toggle {
-  width: 100%;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 10px;
-  padding: 15px 20px;
-  color: white;
-  font-size: 16px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  backdrop-filter: blur(10px);
-  transition: all 0.3s ease;
-}
-
-.filter-toggle:hover {
-  background: rgba(255, 255, 255, 0.15);
-}
-
 .filter-badge {
   background: #ff6b6b;
   color: white;
@@ -48,8 +28,7 @@
 .filter-content {
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  border-top: none;
-  border-radius: 0 0 10px 10px;
+  border-radius: 10px;
   padding: 20px;
   backdrop-filter: blur(10px);
 }
@@ -166,10 +145,6 @@
 }
 
 @media (max-width: 768px) {
-  .filter-toggle {
-    padding: 12px 16px;
-    font-size: 14px;
-  }
   
   .filter-content {
     padding: 16px;

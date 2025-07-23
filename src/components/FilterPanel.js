@@ -66,22 +66,6 @@ const FilterPanel = ({ filters, onFilterChange }) => {
 
   return (
     <div className="filter-panel">
-      <button 
-        className="filter-toggle"
-        onClick={() => setIsExpanded(!isExpanded)}
-      >
-        <span>{t('filters.title')}</span>
-        {hasActiveFilters && <span className="filter-badge">{
-          [
-            filters.minRating > 3,
-            filters.maxDistance < 1000, 
-            filters.cuisineTypes.length > 0,
-            filters.openNow !== true
-          ].filter(Boolean).length
-        }</span>}
-        <span className={`arrow ${isExpanded ? 'expanded' : ''}`}>▼</span>
-      </button>
-
       {isExpanded && (
         <div className="filter-content">
           <div className="filter-section">
