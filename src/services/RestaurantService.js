@@ -2,7 +2,45 @@ import LocationService from './LocationService';
 
 class RestaurantService {
   static GOOGLE_MAPS_API_KEY = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
+  static cache = new Map();
+  static CACHE_DURATION = 10 * 60 * 1000; // 10 minutes in milliseconds
 
+  static generateCacheKey(location, radius, language, cuisineTypes) {
+    const roundedLat = Math.round(location.latitude * 1000) / 1000; // Round to ~100m precision
+    const roundedLng = Math.round(location.longitude * 1000) / 1000;
+    const sortedCuisines = [...cuisineTypes].sort().join(',');
+    return `${roundedLat},${roundedLng}-${radius}-${language}-${sortedCuisines}`;
+  }
+
+  static getCachedData(cacheKey) {
+    const cached = this.cache.get(cacheKey);
+    if (!cached) return null;
+    
+    const now = Date.now();
+    if (now - cached.timestamp > this.CACHE_DURATION) {
+      this.cache.delete(cacheKey);
+      return null;
+    }
+    
+    return cached.data;
+  }
+
+  static setCachedData(cacheKey, data) {
+    this.cache.set(cacheKey, {
+      data,
+      timestamp: Date.now()
+    });
+    
+    // Clean up old cache entries to prevent memory leaks
+    if (this.cache.size > 50) {
+      const now = Date.now();
+      for (const [key, value] of this.cache.entries()) {
+        if (now - value.timestamp > this.CACHE_DURATION) {
+          this.cache.delete(key);
+        }
+      }
+    }
+  }
 
   static getGoogleMapsLanguage(i18nLanguage) {
     // Map i18n language codes to Google Maps supported language codes
@@ -61,6 +99,16 @@ class RestaurantService {
   }
 
   static async searchNearby(location, radius = 5000, language = 'en', cuisineTypes = []) {
+    // Generate cache key
+    const cacheKey = this.generateCacheKey(location, radius, language, cuisineTypes);
+    
+    // Check cache first
+    const cachedData = this.getCachedData(cacheKey);
+    if (cachedData) {
+      console.log('Using cached restaurant data');
+      return cachedData;
+    }
+
     // Check if API key is available
     if (!this.GOOGLE_MAPS_API_KEY) {
       console.log('No Google Maps API key found, using mock data');
@@ -84,7 +132,8 @@ class RestaurantService {
           }
         },
         languageCode: googleMapsLanguage,
-        maxResultCount: 20
+        maxResultCount: 20,
+        rankPreference: "DISTANCE"
       };
 
       // Make request to new Nearby Search API
@@ -111,6 +160,10 @@ class RestaurantService {
 
       // Format results for our app
       const formattedResults = data.places.map(place => this.formatNewApiRestaurantData(place, location));
+      
+      // Cache the results
+      this.setCachedData(cacheKey, formattedResults);
+      
       return formattedResults;
       
     } catch (error) {
@@ -205,9 +258,6 @@ class RestaurantService {
       priceLevel: place.price_level || 0,
       cuisineTypes: this.extractCuisineTypes(place.types),
       isOpen: place.opening_hours ? place.opening_hours.open_now : true,
-      photoUrl: place.photos && place.photos.length > 0 
-        ? place.photos[0].getUrl({ maxWidth: 400, maxHeight: 300 })
-        : null,
       location: {
         lat: lat,
         lng: lng
@@ -236,9 +286,6 @@ class RestaurantService {
       priceLevel: place.priceLevel || 0,
       cuisineTypes: this.extractCuisineTypes(place.types || []),
       isOpen: place.currentOpeningHours ? place.currentOpeningHours.openNow : true,
-      photoUrl: place.photos && place.photos.length > 0 
-        ? `https://places.googleapis.com/v1/${place.photos[0].name}/media?maxWidthPx=400&maxHeightPx=300&key=${this.GOOGLE_MAPS_API_KEY}`
-        : null,
       location: {
         lat: lat,
         lng: lng
@@ -258,7 +305,6 @@ class RestaurantService {
         priceLevel: 2,
         cuisineTypes: ['pizza', 'italian'],
         isOpen: true,
-        photoUrl: null,
         location: { lat: location.latitude + 0.007, lng: location.longitude + 0.007 }
       },
       {
@@ -271,7 +317,6 @@ class RestaurantService {
         priceLevel: 3,
         cuisineTypes: ['sushi', 'japanese'],
         isOpen: true,
-        photoUrl: null,
         location: { lat: location.latitude - 0.009, lng: location.longitude + 0.011 }
       },
       {
@@ -284,7 +329,6 @@ class RestaurantService {
         priceLevel: 1,
         cuisineTypes: ['burger', 'american'],
         isOpen: true,
-        photoUrl: null,
         location: { lat: location.latitude + 0.005, lng: location.longitude - 0.008 }
       },
       {
@@ -297,8 +341,7 @@ class RestaurantService {
         priceLevel: 2,
         cuisineTypes: ['mexican', 'tacos'],
         isOpen: true,
-        photoUrl: null,
-        location: { lat: location.latitude - 0.012, lng: location.longitude - 0.015 }
+      location: { lat: location.latitude - 0.012, lng: location.longitude - 0.015 }
       },
       {
         id: 'mock-5',
@@ -310,7 +353,6 @@ class RestaurantService {
         priceLevel: 2,
         cuisineTypes: ['pasta', 'italian'],
         isOpen: false,
-        photoUrl: null,
         location: { lat: location.latitude + 0.008, lng: location.longitude + 0.006 }
       },
       {
@@ -323,7 +365,6 @@ class RestaurantService {
         priceLevel: 2,
         cuisineTypes: ['chinese', 'asian'],
         isOpen: true,
-        photoUrl: null,
         location: { lat: location.latitude - 0.016, lng: location.longitude + 0.018 }
       },
       {
@@ -336,7 +377,6 @@ class RestaurantService {
         priceLevel: 3,
         cuisineTypes: ['healthy', 'salad'],
         isOpen: true,
-        photoUrl: null,
         location: { lat: location.latitude + 0.009, lng: location.longitude - 0.012 }
       },
       {
@@ -349,7 +389,6 @@ class RestaurantService {
         priceLevel: 3,
         cuisineTypes: ['bbq', 'american'],
         isOpen: true,
-        photoUrl: null,
         location: { lat: location.latitude - 0.014, lng: location.longitude - 0.016 }
       }
     ];
