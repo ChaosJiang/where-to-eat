@@ -83,12 +83,19 @@ const PrizeWheel = ({ restaurants }) => {
     if (restaurants.length === 0) return null;
 
     const segmentAngle = 360 / restaurants.length;
-    const radius = 167; // (334px / 2)
-    const centerX = 167; // Half of SVG width (334px / 2)
-    const centerY = 167; // Half of SVG height (334px / 2)
+    // Make SVG responsive with minimal spacing
+    const svgSize = 'calc(100% - 8px)'; // 100% minus 4px border on each side
+    const radius = 163; // Increased radius for tighter fit
+    const centerX = 167; // Center coordinates stay the same for calculations
+    const centerY = 167;
     
     return (
-      <svg width="334" height="334" style={{ position: 'absolute' }}>
+      <svg 
+        width={svgSize} 
+        height={svgSize} 
+        viewBox="0 0 334 334"
+        style={{ position: 'absolute', top: '4px', left: '4px' }}
+      >
         {restaurants.map((restaurant, index) => {
           const startAngle = (index * segmentAngle - 90) * (Math.PI / 180); // -90 to start from top
           const endAngle = ((index + 1) * segmentAngle - 90) * (Math.PI / 180);
