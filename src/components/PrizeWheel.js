@@ -11,6 +11,10 @@ const PrizeWheel = ({ restaurants }) => {
   const wheelRef = useRef(null);
   const spinSoundRef = useRef(null);
 
+  useEffect(() => {
+    setSelectedRestaurant(null);
+  }, [restaurants]);
+
   const colors = [
     '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FECA57',
     '#FF9FF3', '#54A0FF', '#5F27CD', '#00D2D3', '#FF9F43'
