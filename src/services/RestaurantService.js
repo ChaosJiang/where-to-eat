@@ -258,9 +258,6 @@ class RestaurantService {
       priceLevel: place.price_level || 0,
       cuisineTypes: this.extractCuisineTypes(place.types),
       isOpen: place.opening_hours ? place.opening_hours.open_now : true,
-      photoUrl: place.photos && place.photos.length > 0 
-        ? place.photos[0].getUrl({ maxWidth: 400, maxHeight: 300 })
-        : null,
       location: {
         lat: lat,
         lng: lng
@@ -289,9 +286,6 @@ class RestaurantService {
       priceLevel: place.priceLevel || 0,
       cuisineTypes: this.extractCuisineTypes(place.types || []),
       isOpen: place.currentOpeningHours ? place.currentOpeningHours.openNow : true,
-      photoUrl: place.photos && place.photos.length > 0 
-        ? `https://places.googleapis.com/v1/${place.photos[0].name}/media?maxWidthPx=400&maxHeightPx=300&key=${this.GOOGLE_MAPS_API_KEY}`
-        : null,
       location: {
         lat: lat,
         lng: lng
@@ -311,7 +305,6 @@ class RestaurantService {
         priceLevel: 2,
         cuisineTypes: ['pizza', 'italian'],
         isOpen: true,
-        photoUrl: null,
         location: { lat: location.latitude + 0.007, lng: location.longitude + 0.007 }
       },
       {
@@ -324,7 +317,6 @@ class RestaurantService {
         priceLevel: 3,
         cuisineTypes: ['sushi', 'japanese'],
         isOpen: true,
-        photoUrl: null,
         location: { lat: location.latitude - 0.009, lng: location.longitude + 0.011 }
       },
       {
@@ -337,7 +329,6 @@ class RestaurantService {
         priceLevel: 1,
         cuisineTypes: ['burger', 'american'],
         isOpen: true,
-        photoUrl: null,
         location: { lat: location.latitude + 0.005, lng: location.longitude - 0.008 }
       },
       {
@@ -350,8 +341,7 @@ class RestaurantService {
         priceLevel: 2,
         cuisineTypes: ['mexican', 'tacos'],
         isOpen: true,
-        photoUrl: null,
-        location: { lat: location.latitude - 0.012, lng: location.longitude - 0.015 }
+      location: { lat: location.latitude - 0.012, lng: location.longitude - 0.015 }
       },
       {
         id: 'mock-5',
@@ -363,7 +353,6 @@ class RestaurantService {
         priceLevel: 2,
         cuisineTypes: ['pasta', 'italian'],
         isOpen: false,
-        photoUrl: null,
         location: { lat: location.latitude + 0.008, lng: location.longitude + 0.006 }
       },
       {
@@ -376,7 +365,6 @@ class RestaurantService {
         priceLevel: 2,
         cuisineTypes: ['chinese', 'asian'],
         isOpen: true,
-        photoUrl: null,
         location: { lat: location.latitude - 0.016, lng: location.longitude + 0.018 }
       },
       {
@@ -389,7 +377,6 @@ class RestaurantService {
         priceLevel: 3,
         cuisineTypes: ['healthy', 'salad'],
         isOpen: true,
-        photoUrl: null,
         location: { lat: location.latitude + 0.009, lng: location.longitude - 0.012 }
       },
       {
@@ -402,7 +389,6 @@ class RestaurantService {
         priceLevel: 3,
         cuisineTypes: ['bbq', 'american'],
         isOpen: true,
-        photoUrl: null,
         location: { lat: location.latitude - 0.014, lng: location.longitude - 0.016 }
       }
     ];
