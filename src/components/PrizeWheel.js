@@ -177,9 +177,6 @@ const PrizeWheel = ({ restaurants }) => {
             <div className="restaurant-details">
               <span className="rating">★ {selectedRestaurant.rating}</span>
               <span className="distance">{selectedRestaurant.formattedDistance}</span>
-              <span className="cuisine">
-                {selectedRestaurant.cuisineTypes.join(', ')}
-              </span>
             </div>
             <p className="address">{selectedRestaurant.address}</p>
             {!selectedRestaurant.isOpen && (
