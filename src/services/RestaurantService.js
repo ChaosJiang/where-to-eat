@@ -133,7 +133,7 @@ class RestaurantService {
         },
         languageCode: googleMapsLanguage,
         maxResultCount: 20,
-        rankPreference: "DISTANCE"
+        rankPreference: "POPULARITY"
       };
 
       // Make request to new Nearby Search API
