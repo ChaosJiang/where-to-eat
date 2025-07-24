@@ -78,7 +78,36 @@ const PrizeWheel = ({ restaurants }) => {
           const endAngle = ((index + 1) * segmentAngle - 90) * (Math.PI / 180);
           const color = colors[index % colors.length];
           
-          // Calculate path coordinates
+          // For single restaurant, create a full circle
+          if (restaurants.length === 1) {
+            return (
+              <g key={restaurant.id}>
+                <circle
+                  cx={centerX}
+                  cy={centerY}
+                  r={radius}
+                  fill={color}
+                  stroke="rgba(255, 255, 255, 0.3)"
+                  strokeWidth="1"
+                />
+                <text
+                  x={centerX}
+                  y={centerY - 60}
+                  fill="white"
+                  fontSize="16"
+                  fontWeight="bold"
+                  textAnchor="middle"
+                  dominantBaseline="middle"
+                  style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.7)' }}
+                >
+                  <tspan x={centerX} dy="-8">{truncateText(restaurant.name, 18)}</tspan>
+                  <tspan x={centerX} dy="20" fontSize="14">★ {restaurant.rating}</tspan>
+                </text>
+              </g>
+            );
+          }
+          
+          // Calculate path coordinates for multiple restaurants
           const x1 = centerX + radius * Math.cos(startAngle);
           const y1 = centerY + radius * Math.sin(startAngle);
           const x2 = centerX + radius * Math.cos(endAngle);
