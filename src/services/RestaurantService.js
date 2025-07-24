@@ -84,7 +84,8 @@ class RestaurantService {
           }
         },
         languageCode: googleMapsLanguage,
-        maxResultCount: 20
+        maxResultCount: 20,
+        rankPreference: "DISTANCE"
       };
 
       // Make request to new Nearby Search API
