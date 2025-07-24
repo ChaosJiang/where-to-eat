@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import SoundManager from '../utils/SoundManager';
 import './PrizeWheel.css';
@@ -13,6 +13,17 @@ const PrizeWheel = ({ restaurants }) => {
 
   useEffect(() => {
     setSelectedRestaurant(null);
+    
+    // Cleanup function to stop any ongoing sounds
+    return () => {
+      if (spinSoundRef.current) {
+        try {
+          spinSoundRef.current.stop();
+        } catch (e) {
+          // Sound may already be stopped
+        }
+      }
+    };
   }, [restaurants]);
 
   const truncateText = (text, maxLength) => {
@@ -22,17 +33,22 @@ const PrizeWheel = ({ restaurants }) => {
 
   const colors = [
     '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FECA57',
-    '#FF9FF3', '#54A0FF', '#5F27CD', '#00D2D3', '#FF9F43'
+    '#FF9FF3', '#54A0FF', '#5F27CD', '#00D2D3', '#FF9F43',
+    '#E74C3C', '#3498DB', '#2ECC71', '#F39C12', '#9B59B6',
+    '#1ABC9C', '#34495E', '#E67E22', '#95A5A6', '#16A085'
   ];
 
   const handleSpin = () => {
     if (isSpinning || restaurants.length === 0) return;
+    // Prevent multiple rapid clicks
+    if (Date.now() - (window.lastSpinTime || 0) < 500) return;
+    window.lastSpinTime = Date.now();
 
     setIsSpinning(true);
     setSelectedRestaurant(null);
 
     const segmentAngle = 360 / restaurants.length;
-    const spins = 5;
+    const spins = Math.floor(Math.random() * 3) + 4; // 4-6 spins for variety
     const randomSpinAngle = Math.random() * 360;
     const finalRotation = rotation + (360 * spins) + randomSpinAngle;
 
@@ -63,13 +79,13 @@ const PrizeWheel = ({ restaurants }) => {
     }, 3000);
   };
 
-  const renderWheelSegments = () => {
+  const wheelSegments = useMemo(() => {
     if (restaurants.length === 0) return null;
 
     const segmentAngle = 360 / restaurants.length;
-    const radius = 167;; // (334px / 2)
-    const centerX = 167;; // Half of SVG width (334px / 2)
-    const centerY = 167;; // Half of SVG height (334px / 2)
+    const radius = 167; // (334px / 2)
+    const centerX = 167; // Half of SVG width (334px / 2)
+    const centerY = 167; // Half of SVG height (334px / 2)
     
     return (
       <svg width="334" height="334" style={{ position: 'absolute' }}>
@@ -158,7 +174,9 @@ const PrizeWheel = ({ restaurants }) => {
         })}
       </svg>
     );
-  };
+  }, [restaurants]);
+
+  const renderWheelSegments = () => wheelSegments;
 
   if (restaurants.length === 0) {
     return (
@@ -190,6 +208,8 @@ const PrizeWheel = ({ restaurants }) => {
             className={`spin-button ${isSpinning ? 'spinning' : ''}`}
             onClick={handleSpin}
             disabled={isSpinning}
+            aria-label={isSpinning ? t('wheel.spinning') : t('wheel.spin')}
+            title={isSpinning ? t('wheel.spinning') : t('wheel.spin')}
           >
             {isSpinning ? t('wheel.spinning') : t('wheel.spin')}
           </button>
