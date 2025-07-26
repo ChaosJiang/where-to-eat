@@ -120,8 +120,10 @@ function App() {
 
   return (
     <div className="app-container">
-      <header className="app-header">
+      <div className="app-top-bar">
         <LanguageSelector />
+      </div>
+      <header className="app-header">
         <h1>{t('app.title')}</h1>
         <p>{t('app.subtitle')}</p>
       </header>
@@ -132,11 +134,12 @@ function App() {
         restaurants={restaurants}
       />
 
-      <div className="restaurant-count">
-        {t('app.restaurantsFound', { count: filteredRestaurants.length })}
+      <div className="sticky-wheel-container">
+        <div className="restaurant-count">
+          {t('app.restaurantsFound', { count: filteredRestaurants.length })}
+        </div>
+        <PrizeWheel restaurants={filteredRestaurants} />
       </div>
-
-      <PrizeWheel restaurants={filteredRestaurants} />
     </div>
   );
 }

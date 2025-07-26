@@ -350,29 +350,24 @@ const PrizeWheel = ({ restaurants }) => {
               <p className="closed-warning">{t('wheel.closedWarning')}</p>
             )}
             <div className="action-buttons">
-              <a 
-                href={`https://www.google.com/maps/dir/?api=1&destination=${selectedRestaurant.location.lat},${selectedRestaurant.location.lng}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="action-btn directions-btn"
-              >
-                {t('wheel.directions')}
-              </a>
-              <a 
-                href={`https://www.google.com/maps/search/${encodeURIComponent(selectedRestaurant.name + ' ' + selectedRestaurant.address)}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="action-btn maps-btn"
-              >
-                {t('wheel.viewOnMaps')}
-              </a>
-              <button 
-                onClick={handleSpin}
-                className="action-btn spin-again-btn"
-                disabled={isSpinning}
-              >
-                {t('wheel.spinAgain')}
-              </button>
+              <div className="map-buttons-row">
+                <a 
+                  href={`https://www.google.com/maps/dir/?api=1&destination=${selectedRestaurant.location.lat},${selectedRestaurant.location.lng}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="action-btn directions-btn"
+                >
+                  {t('wheel.directions')}
+                </a>
+                <a 
+                  href={`https://www.google.com/maps/search/${encodeURIComponent(selectedRestaurant.name + ' ' + selectedRestaurant.address)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="action-btn maps-btn"
+                >
+                  {t('wheel.viewOnMaps')}
+                </a>
+              </div>
             </div>
           </div>
         </div>

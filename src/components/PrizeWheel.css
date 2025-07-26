@@ -156,7 +156,7 @@
 .restaurant-details {
   display: flex;
   justify-content: center;
-  gap: 15px;
+  gap: 5px;
   margin-bottom: 15px;
   flex-wrap: wrap;
 }
@@ -170,9 +170,10 @@
 }
 
 .address {
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(255, 255, 255, 0.95);
   margin: 10px 0;
   font-size: 0.9rem;
+  font-weight: 500;
 }
 
 .closed-warning {
@@ -184,9 +185,17 @@
 
 .action-buttons {
   display: flex;
+  flex-direction: column;
   gap: 12px;
   justify-content: center;
+  align-items: center;
   margin-top: 20px;
+}
+
+.map-buttons-row {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
   flex-wrap: wrap;
 }
 
@@ -238,22 +247,6 @@
 
 .maps-btn::after {
   content: '📍';
-  margin-left: 4px;
-}
-
-.spin-again-btn {
-  background: linear-gradient(135deg, rgba(76, 175, 80, 0.9), rgba(67, 160, 71, 0.9));
-  margin-top: 8px;
-  width: 100%;
-}
-
-.spin-again-btn:hover {
-  background: linear-gradient(135deg, rgba(76, 175, 80, 1), rgba(67, 160, 71, 1));
-  box-shadow: 0 8px 20px rgba(76, 175, 80, 0.5);
-}
-
-.spin-again-btn::after {
-  content: '🎯';
   margin-left: 4px;
 }
 
@@ -373,9 +366,9 @@
   }
   
   .restaurant-details {
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    gap: 10px;
+    gap: 5px;
   }
   
   .cuisine-legend {

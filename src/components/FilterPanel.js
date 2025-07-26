@@ -11,6 +11,7 @@ const FilterPanel = ({ filters, onFilterChange }) => {
     price: true,
     openNow: true
   });
+  const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
   
   // Define fixed cuisine types
   const cuisineTypes = [
@@ -127,7 +128,17 @@ const FilterPanel = ({ filters, onFilterChange }) => {
   const activeFilters = getActiveFiltersArray();
 
   return (
-    <div className="filter-panel">
+    <>
+      {/* Mobile Filter Toggle Button */}
+      <button 
+        className="mobile-filter-toggle"
+        onClick={() => setIsBottomSheetOpen(true)}
+      >
+        {t('filters.title')} {activeFilters.length > 0 && `(${activeFilters.length})`}
+      </button>
+
+      {/* Desktop/Tablet Filter Panel */}
+      <div className="filter-panel desktop-filters">
       {/* Active Filters Summary */}
       {activeFilters.length > 0 && (
         <div className="active-filters-summary">
@@ -289,7 +300,155 @@ const FilterPanel = ({ filters, onFilterChange }) => {
           )}
         </div>
       </div>
-    </div>
+      </div>
+
+      {/* Mobile Bottom Sheet */}
+      <div className={`filter-bottom-sheet ${isBottomSheetOpen ? 'open' : ''}`}>
+        <div className="bottom-sheet-backdrop" onClick={() => setIsBottomSheetOpen(false)}></div>
+        <div className="bottom-sheet-content">
+          <div className="bottom-sheet-header">
+            <h2>{t('filters.title')}</h2>
+            <button 
+              className="close-bottom-sheet"
+              onClick={() => setIsBottomSheetOpen(false)}
+            >
+              ✕
+            </button>
+          </div>
+          <div className="bottom-sheet-body">
+            {/* Active Filters Summary */}
+            {activeFilters.length > 0 && (
+              <div className="active-filters-summary">
+                <div className="active-filters-pill">
+                  <span className="active-filters-text">
+                    {activeFilters.join(' • ')}
+                  </span>
+                  <button 
+                    className="clear-all-button"
+                    onClick={clearAllFilters}
+                    title={t('filters.clearAll')}
+                  >
+                    ✕
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Duplicate all filter content for mobile */}
+            <div className="mobile-filter-content">
+              {/* Rating Filter Card */}
+              <div className="filter-card">
+                <div 
+                  className="filter-card-header" 
+                  onClick={() => toggleSection('rating')}
+                >
+                  <h3>{t('filters.minimumRating')}</h3>
+                  <span className={`expand-icon ${expandedSections.rating ? 'expanded' : ''}`}>
+                    ▼
+                  </span>
+                </div>
+                {expandedSections.rating && (
+                  <div className="filter-card-content">
+                    <div className="rating-filters">
+                      {[3.5, 4, 4.5].map(rating => (
+                        <button
+                          key={rating}
+                          className={`filter-chip ${filters.minRating === rating ? 'active' : ''}`}
+                          onClick={() => handleRatingChange(rating)}
+                        >
+                          {`${rating}★+`}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Distance Filter Card */}
+              <div className="filter-card">
+                <div 
+                  className="filter-card-header"
+                  onClick={() => toggleSection('distance')}
+                >
+                  <h3>{t('filters.maximumDistance')}</h3>
+                  <span className={`expand-icon ${expandedSections.distance ? 'expanded' : ''}`}>
+                    ▼
+                  </span>
+                </div>
+                {expandedSections.distance && (
+                  <div className="filter-card-content">
+                    <div className="distance-filters">
+                      {[500, 1000, 2000, 5000].map(distance => (
+                        <button
+                          key={distance}
+                          className={`filter-chip ${filters.maxDistance === distance ? 'active' : ''}`}
+                          onClick={() => handleDistanceChange(distance)}
+                        >
+                          {distance >= 1000 ? `${distance/1000}km` : `${distance}m`}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Cuisine Filter Card */}
+              <div className="filter-card">
+                <div 
+                  className="filter-card-header"
+                  onClick={() => toggleSection('cuisine')}
+                >
+                  <h3>{t('filters.cuisineTypes')}</h3>
+                  <span className={`expand-icon ${expandedSections.cuisine ? 'expanded' : ''}`}>
+                    ▼
+                  </span>
+                </div>
+                {expandedSections.cuisine && (
+                  <div className="filter-card-content">
+                    <div className="cuisine-filters">
+                      {cuisineTypes.map(cuisine => (
+                        <button
+                          key={cuisine}
+                          className={`filter-chip ${filters.cuisineTypes.includes(cuisine) ? 'active' : ''}`}
+                          onClick={() => handleCuisineToggle(cuisine)}
+                        >
+                          {t(`cuisineTypes.${cuisine}`)}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Open Now Filter Card */}
+              <div className="filter-card">
+                <div 
+                  className="filter-card-header"
+                  onClick={() => toggleSection('openNow')}
+                >
+                  <h3>{t('filters.openNowOnly')}</h3>
+                  <span className={`expand-icon ${expandedSections.openNow ? 'expanded' : ''}`}>
+                    ▼
+                  </span>
+                </div>
+                {expandedSections.openNow && (
+                  <div className="filter-card-content">
+                    <div className="open-now-filters">
+                      <button
+                        className={`filter-chip ${filters.openNow ? 'active' : ''}`}
+                        onClick={() => handleOpenNowToggle()}
+                      >
+                        {filters.openNow ? t('filters.openNowOnly') : t('filters.includeClosed')}
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
   );
 };
 
