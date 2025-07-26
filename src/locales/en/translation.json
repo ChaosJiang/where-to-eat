@@ -60,5 +60,11 @@
   },
   "priceRanges": {
     "all": "All Prices"
+  },
+  "error": {
+    "title": "Something went wrong",
+    "message": "We encountered an unexpected error. Please try again.",
+    "details": "Error details",
+    "retry": "Try again"
   }
 }

@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
 import { useTranslation } from 'react-i18next';
 import LocationService from './services/LocationService';
 import RestaurantService from './services/RestaurantService';
 import PrizeWheel from './components/PrizeWheel';
 import FilterPanel from './components/FilterPanel';
 import LanguageSelector from './components/LanguageSelector';
+import ErrorFallback from './components/ErrorFallback';
 import './i18n';
 import './App.css';
 
@@ -119,28 +121,42 @@ function App() {
   }
 
   return (
-    <div className="app-container">
-      <div className="app-top-bar">
-        <LanguageSelector />
-      </div>
-      <header className="app-header">
-        <h1>{t('app.title')}</h1>
-        <p>{t('app.subtitle')}</p>
-      </header>
-
-      <FilterPanel 
-        filters={filters} 
-        onFilterChange={handleFilterChange}
-        restaurants={restaurants}
-      />
-
-      <div className="sticky-wheel-container">
-        <div className="restaurant-count">
-          {t('app.restaurantsFound', { count: filteredRestaurants.length })}
+    <ErrorBoundary
+      FallbackComponent={ErrorFallback}
+      onReset={() => {
+        setError(null);
+        setRestaurants([]);
+        setFilteredRestaurants([]);
+        initializeApp();
+      }}
+    >
+      <div className="app-container">
+        <div className="app-top-bar">
+          <LanguageSelector />
         </div>
-        <PrizeWheel restaurants={filteredRestaurants} />
+        <header className="app-header">
+          <h1>{t('app.title')}</h1>
+          <p>{t('app.subtitle')}</p>
+        </header>
+
+        <ErrorBoundary FallbackComponent={ErrorFallback}>
+          <FilterPanel 
+            filters={filters} 
+            onFilterChange={handleFilterChange}
+            restaurants={restaurants}
+          />
+        </ErrorBoundary>
+
+        <div className="sticky-wheel-container">
+          <div className="restaurant-count">
+            {t('app.restaurantsFound', { count: filteredRestaurants.length })}
+          </div>
+          <ErrorBoundary FallbackComponent={ErrorFallback}>
+            <PrizeWheel restaurants={filteredRestaurants} />
+          </ErrorBoundary>
+        </div>
       </div>
-    </div>
+    </ErrorBoundary>
   );
 }
 
