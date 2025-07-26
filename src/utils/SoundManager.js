@@ -154,6 +154,52 @@ class SoundManager {
       return null;
     }
   }
+
+  createTickSound() {
+    if (!this.audioContext) return null;
+
+    const duration = 0.05;
+    const sampleRate = this.audioContext.sampleRate;
+    const buffer = this.audioContext.createBuffer(1, duration * sampleRate, sampleRate);
+    const data = buffer.getChannelData(0);
+
+    for (let i = 0; i < data.length; i++) {
+      const t = i / sampleRate;
+      const frequency = 1200;
+      const decay = Math.exp(-t * 40);
+      
+      data[i] = Math.sin(2 * Math.PI * frequency * t) * decay * 0.3;
+    }
+
+    return buffer;
+  }
+
+  playTickSound() {
+    if (!this.audioContext) return;
+
+    try {
+      if (this.audioContext.state === 'suspended') {
+        this.audioContext.resume();
+      }
+
+      const source = this.audioContext.createBufferSource();
+      const gainNode = this.audioContext.createGain();
+      
+      source.buffer = this.createTickSound();
+      source.connect(gainNode);
+      gainNode.connect(this.audioContext.destination);
+      
+      gainNode.gain.setValueAtTime(0.15, this.audioContext.currentTime);
+      
+      source.start();
+      source.stop(this.audioContext.currentTime + 0.05);
+      
+      return source;
+    } catch (error) {
+      console.warn('Failed to play tick sound:', error);
+      return null;
+    }
+  }
 }
 
 export default new SoundManager();

@@ -30,8 +30,10 @@
     "adjustCriteria": "请尝试调整搜索条件",
     "resultTitle": "🎉 你应该去这里吃：",
     "closedWarning": "⚠️ 此餐厅可能已关门",
-    "directions": "🗺️ 导航",
-    "viewOnMaps": "📍 在地图中查看"
+    "directions": "导航",
+    "viewOnMaps": "在地图中查看",
+    "spinAgain": "再次转动",
+    "priceGuide": "💰 价格指南"
   },
   "location": {
     "notSupported": "此浏览器不支持地理定位",

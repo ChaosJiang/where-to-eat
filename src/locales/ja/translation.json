@@ -30,8 +30,10 @@
     "adjustCriteria": "検索条件を調整してみてください",
     "resultTitle": "🎉 ここで食べましょう：",
     "closedWarning": "⚠️ このレストランは閉店している可能性があります",
-    "directions": "🗺️ 道順",
-    "viewOnMaps": "📍 地図で見る"
+    "directions": "道順",
+    "viewOnMaps": "地図で見る",
+    "spinAgain": "もう一度回す",
+    "priceGuide": "💰 価格ガイド"
   },
   "location": {
     "notSupported": "このブラウザは位置情報をサポートしていません",

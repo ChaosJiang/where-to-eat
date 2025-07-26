@@ -8,13 +8,16 @@ const PrizeWheel = ({ restaurants }) => {
   const [isSpinning, setIsSpinning] = useState(false);
   const [selectedRestaurant, setSelectedRestaurant] = useState(null);
   const [rotation, setRotation] = useState(0);
+  const [highlightedSegment, setHighlightedSegment] = useState(null);
   const wheelRef = useRef(null);
   const spinSoundRef = useRef(null);
+  const tickIntervalRef = useRef(null);
 
   useEffect(() => {
     setSelectedRestaurant(null);
+    setHighlightedSegment(null);
     
-    // Cleanup function to stop any ongoing sounds
+    // Cleanup function to stop any ongoing sounds and intervals
     return () => {
       if (spinSoundRef.current) {
         try {
@@ -22,6 +25,9 @@ const PrizeWheel = ({ restaurants }) => {
         } catch (e) {
           // Sound may already be stopped
         }
+      }
+      if (tickIntervalRef.current) {
+        clearInterval(tickIntervalRef.current);
       }
     };
   }, [restaurants]);
@@ -39,12 +45,43 @@ const PrizeWheel = ({ restaurants }) => {
     return text.substring(0, maxLength - 3) + '...';
   };
 
-  const colors = [
-    '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FECA57',
-    '#FF9FF3', '#54A0FF', '#5F27CD', '#00D2D3', '#FF9F43',
-    '#E74C3C', '#3498DB', '#2ECC71', '#F39C12', '#9B59B6',
-    '#1ABC9C', '#34495E', '#E67E22', '#95A5A6', '#16A085'
-  ];
+  // Get currency symbol from currency code
+  const getCurrencySymbol = (currencyCode) => {
+    const currencyMap = {
+      'USD': '$',
+      'EUR': '€',
+      'GBP': '£',
+      'JPY': '¥',
+      'CNY': '¥',
+      'KRW': '₩',
+      'CAD': 'C$',
+      'AUD': 'A$',
+      'CHF': 'CHF',
+      'SGD': 'S$',
+      'HKD': 'HK$',
+      'THB': '฿',
+      'INR': '₹',
+      'MXN': '$',
+      'BRL': 'R$',
+      'RUB': '₽',
+      'ZAR': 'R',
+      'NZD': 'NZ$',
+      'SEK': 'kr',
+      'NOK': 'kr',
+      'DKK': 'kr',
+      'PLN': 'zł',
+      'CZK': 'Kč',
+      'HUF': 'Ft'
+    };
+    return currencyMap[currencyCode?.toUpperCase()] || currencyCode || '$';
+  };
+
+  const getSegmentColor = (restaurant) => {
+    // Use simple alternating colors for visual distinction
+    const colors = ['#4ECDC4', '#45B7D1', '#96CEB4', '#FECA57', '#FF9FF3', '#54A0FF'];
+    const index = restaurants.indexOf(restaurant);
+    return colors[index % colors.length];
+  };
 
   const handleSpin = () => {
     if (isSpinning || restaurants.length === 0) return;
@@ -54,6 +91,7 @@ const PrizeWheel = ({ restaurants }) => {
 
     setIsSpinning(true);
     setSelectedRestaurant(null);
+    setHighlightedSegment(null);
 
     const segmentAngle = 360 / restaurants.length;
     const spins = Math.floor(Math.random() * 3) + 4; // 4-6 spins for variety
@@ -65,8 +103,34 @@ const PrizeWheel = ({ restaurants }) => {
     SoundManager.playClickSound();
     spinSoundRef.current = SoundManager.playSpinSound();
 
+    // Setup tick sounds during spin
+    let currentSegment = -1;
+    const tickInterval = setInterval(() => {
+      const currentRotation = rotation + ((finalRotation - rotation) * 
+        Math.min((Date.now() - window.lastSpinTime) / 3000, 1));
+      
+      const normalizedAngle = (currentRotation % 360 + 360) % 360;
+      const adjustedAngle = (360 - normalizedAngle) % 360;
+      const segmentIndex = Math.floor(adjustedAngle / segmentAngle) % restaurants.length;
+      
+      if (segmentIndex !== currentSegment) {
+        currentSegment = segmentIndex;
+        setHighlightedSegment(segmentIndex);
+        SoundManager.playTickSound();
+        
+        // Add haptic feedback on mobile
+        if (navigator.vibrate) {
+          navigator.vibrate(10);
+        }
+      }
+    }, 50);
+
+    tickIntervalRef.current = tickInterval;
+
     setTimeout(() => {
+      clearInterval(tickInterval);
       setIsSpinning(false);
+      setHighlightedSegment(null);
       
       // Calculate which restaurant the arrow points to after spinning
       const normalizedAngle = (finalRotation % 360 + 360) % 360;
@@ -91,10 +155,9 @@ const PrizeWheel = ({ restaurants }) => {
     if (restaurants.length === 0) return null;
 
     const segmentAngle = 360 / restaurants.length;
-    // Make SVG responsive with minimal spacing
-    const svgSize = 'calc(100% - 8px)'; // 100% minus 4px border on each side
-    const radius = 163; // Increased radius for tighter fit
-    const centerX = 167; // Center coordinates stay the same for calculations
+    const svgSize = 'calc(100% - 8px)';
+    const radius = 163;
+    const centerX = 167;
     const centerY = 167;
     
     return (
@@ -104,12 +167,23 @@ const PrizeWheel = ({ restaurants }) => {
         viewBox="0 0 334 334"
         style={{ position: 'absolute', top: '4px', left: '4px' }}
       >
+        <defs>
+          <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+            <feMerge> 
+              <feMergeNode in="coloredBlur"/>
+              <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+          </filter>
+        </defs>
+        
         {restaurants.map((restaurant, index) => {
-          const startAngle = (index * segmentAngle - 90) * (Math.PI / 180); // -90 to start from top
+          const startAngle = (index * segmentAngle - 90) * (Math.PI / 180);
           const endAngle = ((index + 1) * segmentAngle - 90) * (Math.PI / 180);
-          const color = colors[index % colors.length];
+          const color = getSegmentColor(restaurant);
+          const isHighlighted = highlightedSegment === index;
           
-          // For single restaurant, create a full circle
+          // Single restaurant case
           if (restaurants.length === 1) {
             return (
               <g key={restaurant.id}>
@@ -118,27 +192,30 @@ const PrizeWheel = ({ restaurants }) => {
                   cy={centerY}
                   r={radius}
                   fill={color}
-                  stroke="rgba(255, 255, 255, 0.3)"
-                  strokeWidth="1"
+                  stroke="rgba(255, 255, 255, 0.4)"
+                  strokeWidth="2"
+                  filter={isHighlighted ? "url(#glow)" : "none"}
+                  style={{
+                    filter: isHighlighted ? 'brightness(1.3) drop-shadow(0 0 10px rgba(255,255,255,0.5))' : 'none'
+                  }}
                 />
                 <text
                   x={centerX}
-                  y={centerY - 60}
+                  y={centerY - 20}
                   fill="white"
-                  fontSize="16"
+                  fontSize="18"
                   fontWeight="bold"
                   textAnchor="middle"
                   dominantBaseline="middle"
-                  style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.7)' }}
+                  style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.8)' }}
                 >
-                  <tspan x={centerX} dy="-8">{truncateText(restaurant.name, 18)}</tspan>
-                  <tspan x={centerX} dy="20" fontSize="14">★ {restaurant.rating}</tspan>
+                  {truncateText(restaurant.name, 20)}
                 </text>
               </g>
             );
           }
           
-          // Calculate path coordinates for multiple restaurants
+          // Multiple restaurants
           const x1 = centerX + radius * Math.cos(startAngle);
           const y1 = centerY + radius * Math.sin(startAngle);
           const x2 = centerX + radius * Math.cos(endAngle);
@@ -153,14 +230,15 @@ const PrizeWheel = ({ restaurants }) => {
             'Z'
           ].join(' ');
           
-          // Calculate text position
+          // Improved text positioning - always horizontal
           const midAngle = startAngle + (endAngle - startAngle) / 2;
-          const textRadius = radius * 0.7;
+          const textRadius = radius * 0.65;
           const textX = centerX + textRadius * Math.cos(midAngle);
           const textY = centerY + textRadius * Math.sin(midAngle);
           
-          // Adjust max characters based on number of segments
-          const maxChars = restaurants.length <= 4 ? 15 : restaurants.length <= 8 ? 12 : 8;
+          // Better text sizing based on segment count
+          const fontSize = restaurants.length <= 4 ? 14 : restaurants.length <= 8 ? 12 : 10;
+          const maxChars = restaurants.length <= 4 ? 16 : restaurants.length <= 8 ? 14 : 10;
           const truncatedName = truncateText(restaurant.name, maxChars);
           
           return (
@@ -168,28 +246,48 @@ const PrizeWheel = ({ restaurants }) => {
               <path
                 d={pathData}
                 fill={color}
-                stroke="rgba(255, 255, 255, 0.3)"
-                strokeWidth="1"
+                stroke="rgba(255, 255, 255, 0.4)"
+                strokeWidth="2"
+                style={{
+                  filter: isHighlighted ? 'brightness(1.4) drop-shadow(0 0 8px rgba(255,255,255,0.6))' : 'none',
+                  transition: 'all 0.1s ease'
+                }}
               />
+              
+              {/* Horizontal text - always readable */}
               <text
                 x={textX}
                 y={textY}
                 fill="white"
-                fontSize="11"
-                fontWeight="bold"
+                fontSize={fontSize}
+                fontWeight="600"
                 textAnchor="middle"
                 dominantBaseline="middle"
-                style={{ textShadow: '1px 1px 2px rgba(0, 0, 0, 0.5)' }}
+                style={{ 
+                  textShadow: '2px 2px 4px rgba(0, 0, 0, 0.8)',
+                  letterSpacing: '0.5px'
+                }}
               >
-                <tspan x={textX} dy="-6">{truncatedName}</tspan>
-                <tspan x={textX} dy="12" fontSize="10">★ {restaurant.rating}</tspan>
+                {truncatedName}
               </text>
+              
+              {/* Cuisine type indicator */}
+              {restaurant.cuisineTypes.length > 0 && (
+                <circle
+                  cx={centerX + (radius * 0.9) * Math.cos(midAngle)}
+                  cy={centerY + (radius * 0.9) * Math.sin(midAngle)}
+                  r="4"
+                  fill="rgba(255, 255, 255, 0.8)"
+                  stroke={color}
+                  strokeWidth="2"
+                />
+              )}
             </g>
           );
         })}
       </svg>
     );
-  }, [restaurants]);
+  }, [restaurants, highlightedSegment]);
 
   const renderWheelSegments = () => wheelSegments;
 
@@ -241,6 +339,11 @@ const PrizeWheel = ({ restaurants }) => {
             <div className="restaurant-details">
               <span className="rating">★ {selectedRestaurant.rating}</span>
               <span className="distance">{selectedRestaurant.formattedDistance}</span>
+              {selectedRestaurant.priceRange && (
+                <span className="price-range">
+                  {getCurrencySymbol(selectedRestaurant.priceRange.currency)}{selectedRestaurant.priceRange.startPrice}-{getCurrencySymbol(selectedRestaurant.priceRange.currency)}{selectedRestaurant.priceRange.endPrice}
+                </span>
+              )}
             </div>
             <p className="address">{selectedRestaurant.address}</p>
             {!selectedRestaurant.isOpen && (
@@ -263,6 +366,13 @@ const PrizeWheel = ({ restaurants }) => {
               >
                 {t('wheel.viewOnMaps')}
               </a>
+              <button 
+                onClick={handleSpin}
+                className="action-btn spin-again-btn"
+                disabled={isSpinning}
+              >
+                {t('wheel.spinAgain')}
+              </button>
             </div>
           </div>
         </div>
