@@ -142,7 +142,7 @@ class RestaurantService {
         headers: {
           'Content-Type': 'application/json',
           'X-Goog-Api-Key': this.GOOGLE_MAPS_API_KEY,
-          'X-Goog-FieldMask': 'places.id,places.displayName,places.formattedAddress,places.location,places.rating,places.priceLevel,places.types,places.currentOpeningHours'
+          'X-Goog-FieldMask': 'places.id,places.displayName,places.formattedAddress,places.location,places.rating,places.priceRange,places.types,places.currentOpeningHours'
         },
         body: JSON.stringify(requestBody)
       });
@@ -255,7 +255,6 @@ class RestaurantService {
       distance: distance,
       formattedDistance: LocationService.formatDistance(distance),
       address: place.vicinity,
-      priceLevel: place.price_level || 0,
       cuisineTypes: this.extractCuisineTypes(place.types),
       isOpen: place.opening_hours ? place.opening_hours.open_now : true,
       location: {
@@ -276,6 +275,16 @@ class RestaurantService {
       lng
     );
 
+    // Extract price range information
+    let priceRange = null;
+    if (place.priceRange) {
+      priceRange = {
+        startPrice: place.priceRange.startPrice?.units || 0,
+        endPrice: place.priceRange.endPrice?.units || 0,
+        currency: place.priceRange.startPrice?.currencyCode || 'USD'
+      };
+    }
+
     return {
       id: place.id,
       name: place.displayName?.text || 'Unknown Restaurant',
@@ -283,7 +292,7 @@ class RestaurantService {
       distance: distance,
       formattedDistance: LocationService.formatDistance(distance),
       address: place.formattedAddress || '',
-      priceLevel: place.priceLevel || 0,
+      priceRange: priceRange,
       cuisineTypes: this.extractCuisineTypes(place.types || []),
       isOpen: place.currentOpeningHours ? place.currentOpeningHours.openNow : true,
       location: {
@@ -302,7 +311,7 @@ class RestaurantService {
         distance: 800,
         formattedDistance: '800m',
         address: '123 Main St',
-        priceLevel: 2,
+        priceRange: { startPrice: 15, endPrice: 25, currency: 'USD' },
         cuisineTypes: ['pizza', 'italian'],
         isOpen: true,
         location: { lat: location.latitude + 0.007, lng: location.longitude + 0.007 }
@@ -314,7 +323,7 @@ class RestaurantService {
         distance: 1200,
         formattedDistance: '1.2km',
         address: '456 Oak Ave',
-        priceLevel: 3,
+        priceRange: { startPrice: 30, endPrice: 50, currency: 'USD' },
         cuisineTypes: ['sushi', 'japanese'],
         isOpen: true,
         location: { lat: location.latitude - 0.009, lng: location.longitude + 0.011 }
@@ -326,7 +335,7 @@ class RestaurantService {
         distance: 600,
         formattedDistance: '600m',
         address: '789 Elm St',
-        priceLevel: 1,
+        priceRange: { startPrice: 8, endPrice: 15, currency: 'USD' },
         cuisineTypes: ['burger', 'american'],
         isOpen: true,
         location: { lat: location.latitude + 0.005, lng: location.longitude - 0.008 }
@@ -338,10 +347,10 @@ class RestaurantService {
         distance: 1500,
         formattedDistance: '1.5km',
         address: '321 Pine St',
-        priceLevel: 2,
+        priceRange: { startPrice: 12, endPrice: 20, currency: 'USD' },
         cuisineTypes: ['mexican', 'tacos'],
         isOpen: true,
-      location: { lat: location.latitude - 0.012, lng: location.longitude - 0.015 }
+        location: { lat: location.latitude - 0.012, lng: location.longitude - 0.015 }
       },
       {
         id: 'mock-5',
@@ -350,7 +359,7 @@ class RestaurantService {
         distance: 900,
         formattedDistance: '900m',
         address: '654 Maple Ave',
-        priceLevel: 2,
+        priceRange: { startPrice: 14, endPrice: 22, currency: 'USD' },
         cuisineTypes: ['pasta', 'italian'],
         isOpen: false,
         location: { lat: location.latitude + 0.008, lng: location.longitude + 0.006 }
@@ -362,7 +371,7 @@ class RestaurantService {
         distance: 2000,
         formattedDistance: '2.0km',
         address: '987 Cedar St',
-        priceLevel: 2,
+        priceRange: { startPrice: 16, endPrice: 28, currency: 'USD' },
         cuisineTypes: ['chinese', 'asian'],
         isOpen: true,
         location: { lat: location.latitude - 0.016, lng: location.longitude + 0.018 }
@@ -374,7 +383,7 @@ class RestaurantService {
         distance: 1100,
         formattedDistance: '1.1km',
         address: '159 Birch Rd',
-        priceLevel: 3,
+        priceRange: { startPrice: 18, endPrice: 35, currency: 'USD' },
         cuisineTypes: ['healthy', 'salad'],
         isOpen: true,
         location: { lat: location.latitude + 0.009, lng: location.longitude - 0.012 }
@@ -386,7 +395,7 @@ class RestaurantService {
         distance: 1800,
         formattedDistance: '1.8km',
         address: '753 Willow St',
-        priceLevel: 3,
+        priceRange: { startPrice: 25, endPrice: 45, currency: 'USD' },
         cuisineTypes: ['bbq', 'american'],
         isOpen: true,
         location: { lat: location.latitude - 0.014, lng: location.longitude - 0.016 }

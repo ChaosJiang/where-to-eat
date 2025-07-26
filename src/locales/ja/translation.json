@@ -17,6 +17,8 @@
     "maximumDistance": "最大距離",
     "cuisineTypes": "料理の種類",
     "openNowOnly": "営業中のみ",
+    "priceRange": "価格帯",
+    "to": "〜",
     "clearAll": "すべてクリア",
     "any": "すべて"
   },
@@ -52,5 +54,8 @@
     "sushi": "寿司",
     "seafood": "シーフード",
     "pizza": "ピザ"
+  },
+  "priceRanges": {
+    "all": "すべて"
   }
 }

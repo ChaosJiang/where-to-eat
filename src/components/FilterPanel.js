@@ -45,12 +45,26 @@ const FilterPanel = ({ filters, onFilterChange }) => {
     onFilterChange({ ...filters, openNow: !filters.openNow });
   };
 
+  const handlePriceRangeSelect = (minPrice, maxPrice) => {
+    onFilterChange({ ...filters, minPrice, maxPrice });
+  };
+
+  // Define common price ranges based on typical Japanese dining costs
+  const priceRanges = [
+    { min: 0, max: 100000, label: t('priceRanges.all') },
+    { min: 1, max: 2000, label: '¥1 - 2,000' },
+    { min: 2000, max: 5000, label: '¥2,000 - 5,000' },
+    { min: 5000, max: 99999, label: '¥5,000+' },
+  ];
+
   const clearAllFilters = () => {
     onFilterChange({
-      minRating: 3,
+      minRating: 3.5,
       maxDistance: 1000,
       cuisineTypes: [],
-      openNow: true
+      openNow: true,
+      minPrice: 0,
+      maxPrice: 100000
     });
   };
 
@@ -62,7 +76,9 @@ const FilterPanel = ({ filters, onFilterChange }) => {
   const hasActiveFilters = filters.minRating > 3 || 
                           filters.maxDistance < 1000 || 
                           filters.cuisineTypes.length > 0 || 
-                          filters.openNow !== true;
+                          filters.openNow !== true ||
+                          filters.minPrice > 0 ||
+                          filters.maxPrice < 10000;
 
   return (
     <div className="filter-panel">
@@ -110,6 +126,23 @@ const FilterPanel = ({ filters, onFilterChange }) => {
                   onClick={() => handleCuisineToggle(cuisine)}
                 >
                   {t(`cuisineTypes.${cuisine}`)}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="filter-section">
+            <h3>{t('filters.priceRange')}</h3>
+            <div className="price-range-buttons">
+              {priceRanges.map(range => (
+                <button
+                  key={`${range.min}-${range.max}`}
+                  className={`filter-button price-range-button ${
+                    filters.minPrice === range.min && filters.maxPrice === range.max ? 'active' : ''
+                  }`}
+                  onClick={() => handlePriceRangeSelect(range.min, range.max)}
+                >
+                  {range.label}
                 </button>
               ))}
             </div>

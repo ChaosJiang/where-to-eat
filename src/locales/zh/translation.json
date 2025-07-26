@@ -17,6 +17,8 @@
     "maximumDistance": "最大距离",
     "cuisineTypes": "菜系类型",
     "openNowOnly": "仅显示营业中",
+    "priceRange": "价格区间",
+    "to": "至",
     "clearAll": "清除所有筛选",
     "any": "任意"
   },
@@ -52,5 +54,8 @@
     "sushi": "寿司",
     "seafood": "海鲜",
     "pizza": "披萨"
+  },
+  "priceRanges": {
+    "all": "所有价位"
   }
 }

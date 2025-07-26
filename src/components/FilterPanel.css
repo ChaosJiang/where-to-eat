@@ -50,7 +50,9 @@
 
 .rating-filters,
 .distance-filters,
-.cuisine-filters {
+.cuisine-filters,
+.price-filters,
+.price-range-buttons {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
@@ -80,6 +82,13 @@
 .cuisine-button {
   text-transform: capitalize;
 }
+
+.price-range-button {
+  font-weight: 500;
+  min-width: 100px;
+  white-space: nowrap;
+}
+
 
 .toggle-label {
   display: flex;
@@ -166,5 +175,15 @@
   .clear-filters-button {
     padding: 10px;
     font-size: 13px;
+  }
+  
+  .price-range-buttons {
+    gap: 6px;
+  }
+  
+  .price-range-button {
+    min-width: 80px;
+    font-size: 12px;
+    padding: 6px 10px;
   }
 }

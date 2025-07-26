@@ -17,6 +17,8 @@
     "maximumDistance": "Maximum Distance",
     "cuisineTypes": "Cuisine Types",
     "openNowOnly": "Open Now Only",
+    "priceRange": "Price Range",
+    "to": "to",
     "clearAll": "Clear All Filters",
     "any": "Any"
   },
@@ -52,5 +54,8 @@
     "sushi": "Sushi",
     "seafood": "Seafood",
     "pizza": "Pizza"
+  },
+  "priceRanges": {
+    "all": "All Prices"
   }
 }
