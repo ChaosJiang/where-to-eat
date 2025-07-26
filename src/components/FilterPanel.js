@@ -420,6 +420,36 @@ const FilterPanel = ({ filters, onFilterChange }) => {
                 )}
               </div>
 
+              {/* Price Filter Card */}
+              <div className="filter-card">
+                <div 
+                  className="filter-card-header"
+                  onClick={() => toggleSection('price')}
+                >
+                  <h3>{t('filters.priceRange')}</h3>
+                  <span className={`expand-icon ${expandedSections.price ? 'expanded' : ''}`}>
+                    ▼
+                  </span>
+                </div>
+                {expandedSections.price && (
+                  <div className="filter-card-content">
+                    <div className="price-range-buttons">
+                      {priceRanges.map(range => (
+                        <button
+                          key={`${range.min}-${range.max}`}
+                          className={`filter-chip price-chip ${
+                            filters.minPrice === range.min && filters.maxPrice === range.max ? 'active' : ''
+                          }`}
+                          onClick={() => handlePriceRangeSelect(range.min, range.max)}
+                        >
+                          {range.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
               {/* Open Now Filter Card */}
               <div className="filter-card">
                 <div 
