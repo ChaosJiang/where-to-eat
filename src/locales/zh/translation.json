@@ -20,7 +20,8 @@
     "priceRange": "价格区间",
     "to": "至",
     "clearAll": "清除所有筛选",
-    "any": "任意"
+    "any": "任意",
+    "includeClosed": "包含已关门"
   },
   "wheel": {
     "spin": "转动",

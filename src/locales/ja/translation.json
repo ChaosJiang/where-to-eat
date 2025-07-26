@@ -20,7 +20,8 @@
     "priceRange": "価格帯",
     "to": "〜",
     "clearAll": "すべてクリア",
-    "any": "すべて"
+    "any": "すべて",
+    "includeClosed": "閉店含む"
   },
   "wheel": {
     "spin": "回す",

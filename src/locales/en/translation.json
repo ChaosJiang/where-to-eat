@@ -20,7 +20,8 @@
     "priceRange": "Price Range",
     "to": "to",
     "clearAll": "Clear All Filters",
-    "any": "Any"
+    "any": "Any",
+    "includeClosed": "Include Closed"
   },
   "wheel": {
     "spin": "SPIN",
