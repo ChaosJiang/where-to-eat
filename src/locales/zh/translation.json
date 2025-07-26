@@ -17,18 +17,23 @@
     "maximumDistance": "最大距离",
     "cuisineTypes": "菜系类型",
     "openNowOnly": "仅显示营业中",
+    "priceRange": "价格区间",
+    "to": "至",
     "clearAll": "清除所有筛选",
-    "any": "任意"
+    "any": "任意",
+    "includeClosed": "包含已关门"
   },
   "wheel": {
     "spin": "转动",
     "spinning": "转动中...",
     "noRestaurants": "当前筛选条件下未找到餐厅",
     "adjustCriteria": "请尝试调整搜索条件",
-    "resultTitle": "🎉 你应该去这里吃：",
+    "resultTitle": "你应该去这里吃：",
     "closedWarning": "⚠️ 此餐厅可能已关门",
-    "directions": "🗺️ 导航",
-    "viewOnMaps": "📍 在地图中查看"
+    "directions": "导航",
+    "viewOnMaps": "在地图中查看",
+    "spinAgain": "再次转动",
+    "priceGuide": "💰 价格指南"
   },
   "location": {
     "notSupported": "此浏览器不支持地理定位",
@@ -52,5 +57,8 @@
     "sushi": "寿司",
     "seafood": "海鲜",
     "pizza": "披萨"
+  },
+  "priceRanges": {
+    "all": "所有价位"
   }
 }

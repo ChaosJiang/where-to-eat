@@ -17,18 +17,23 @@
     "maximumDistance": "Maximum Distance",
     "cuisineTypes": "Cuisine Types",
     "openNowOnly": "Open Now Only",
+    "priceRange": "Price Range",
+    "to": "to",
     "clearAll": "Clear All Filters",
-    "any": "Any"
+    "any": "Any",
+    "includeClosed": "Include Closed"
   },
   "wheel": {
     "spin": "SPIN",
     "spinning": "SPINNING...",
     "noRestaurants": "No restaurants found with current filters",
     "adjustCriteria": "Try adjusting your search criteria",
-    "resultTitle": "🎉 You should eat at:",
+    "resultTitle": "You should eat at:",
     "closedWarning": "⚠️ This restaurant might be closed",
-    "directions": "🗺️ Directions",
-    "viewOnMaps": "📍 View on Maps"
+    "directions": "Directions",
+    "viewOnMaps": "View on Maps",
+    "spinAgain": "Spin Again",
+    "priceGuide": "💰 Price Guide"
   },
   "location": {
     "notSupported": "Geolocation is not supported by this browser",
@@ -52,5 +57,8 @@
     "sushi": "Sushi",
     "seafood": "Seafood",
     "pizza": "Pizza"
+  },
+  "priceRanges": {
+    "all": "All Prices"
   }
 }

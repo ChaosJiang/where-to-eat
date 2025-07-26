@@ -19,7 +19,9 @@ function App() {
     minRating: 3.5,
     maxDistance: 1000,
     cuisineTypes: [],
-    openNow: true
+    openNow: true,
+    minPrice: 0,
+    maxPrice: 100000
   });
 
   useEffect(() => {
@@ -37,7 +39,7 @@ function App() {
     if (restaurants.length > 0) {
       applyFilters();
     }
-  }, [restaurants, filters.minRating, filters.openNow]);
+  }, [restaurants, filters.minRating, filters.openNow, filters.minPrice, filters.maxPrice]);
 
   const fetchRestaurants = async (userLocation, cuisineFilters = []) => {
     try {
@@ -70,11 +72,22 @@ function App() {
   const applyFilters = () => {
     const filtered = restaurants.filter(restaurant => {
       const ratingMatch = restaurant.rating >= filters.minRating;
-      const distanceMatch = restaurant.distance <= filters.maxDistance;
       // Cuisine filtering is now done at API level, so we don't need to filter here
       const openMatch = !filters.openNow || restaurant.isOpen;
       
-      return ratingMatch && distanceMatch && openMatch;
+      // Price range filtering: check if restaurant's price range overlaps with filter range
+      let priceMatch = true;
+      if (restaurant.priceRange) {
+        const restaurantMinPrice = restaurant.priceRange.startPrice;
+        const restaurantMaxPrice = restaurant.priceRange.endPrice;
+        // Check if the restaurant's price range is in the filter range
+        priceMatch = restaurantMinPrice >= filters.minPrice && restaurantMaxPrice <= filters.maxPrice;
+      } else if (filters.minPrice > 0 || filters.maxPrice < 100000) {
+        // If no price data and user has set price filters, exclude this restaurant
+        priceMatch = false;
+      }
+
+      return ratingMatch && openMatch && priceMatch;
     });
     
     setFilteredRestaurants(filtered);
@@ -107,8 +120,10 @@ function App() {
 
   return (
     <div className="app-container">
-      <header className="app-header">
+      <div className="app-top-bar">
         <LanguageSelector />
+      </div>
+      <header className="app-header">
         <h1>{t('app.title')}</h1>
         <p>{t('app.subtitle')}</p>
       </header>
@@ -119,11 +134,12 @@ function App() {
         restaurants={restaurants}
       />
 
-      <div className="restaurant-count">
-        {t('app.restaurantsFound', { count: filteredRestaurants.length })}
+      <div className="sticky-wheel-container">
+        <div className="restaurant-count">
+          {t('app.restaurantsFound', { count: filteredRestaurants.length })}
+        </div>
+        <PrizeWheel restaurants={filteredRestaurants} />
       </div>
-
-      <PrizeWheel restaurants={filteredRestaurants} />
     </div>
   );
 }

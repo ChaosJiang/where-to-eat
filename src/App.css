@@ -5,6 +5,8 @@
   min-height: 100vh;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
+  position: relative;
+  padding-bottom: 100px; /* Space for sticky wheel */
 }
 
 .app-header {
@@ -72,16 +74,30 @@
   background: #45a049;
 }
 
+.sticky-wheel-container {
+  position: sticky;
+  top: 20px;
+  z-index: 50;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 20px;
+  margin-top: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
 .restaurant-count {
   text-align: center;
-  margin: 20px 0;
+  margin-bottom: 20px;
+  color: rgba(255, 255, 255, 0.95);
   font-size: 1.1rem;
-  opacity: 0.9;
+  font-weight: 600;
 }
 
 @media (max-width: 768px) {
   .app-container {
     padding: 15px;
+    padding-bottom: 120px; /* More space for mobile sticky wheel */
   }
   
   .app-header h1 {
@@ -90,5 +106,13 @@
   
   .app-header p {
     font-size: 1rem;
+  }
+
+  .sticky-wheel-container {
+    position: sticky;
+    top: 10px;
+    padding: 15px;
+    margin-top: 15px;
+    border-radius: 15px;
   }
 }
