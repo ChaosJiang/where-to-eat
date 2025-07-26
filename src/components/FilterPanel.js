@@ -87,21 +87,14 @@ const FilterPanel = ({ filters, onFilterChange }) => {
     }));
   };
 
-  const hasActiveFilters = filters.minRating > 3.5 || 
-                          filters.maxDistance < 1000 || 
-                          filters.cuisineTypes.length > 0 || 
-                          filters.openNow !== true ||
-                          filters.minPrice > 0 ||
-                          filters.maxPrice < 100000;
-
   const getActiveFiltersArray = () => {
     const activeFilters = [];
     
-    if (filters.minRating > 3.5) {
+    if (filters.minRating >= 3.5) {
       activeFilters.push(`Rating ≥ ${filters.minRating}★`);
     }
     
-    if (filters.maxDistance < 1000) {
+    if (filters.maxDistance <= 5000) {
       activeFilters.push(`≤ ${formatDistance(filters.maxDistance)}`);
     }
     
