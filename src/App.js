@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { useTranslation } from 'react-i18next';
 import LocationService from './services/LocationService';
@@ -7,6 +7,7 @@ import PrizeWheel from './components/PrizeWheel';
 import FilterPanel from './components/FilterPanel';
 import LanguageSelector from './components/LanguageSelector';
 import ErrorFallback from './components/ErrorFallback';
+import selectRestaurants from './utils/selectRestaurants';
 import './i18n';
 import './App.css';
 
@@ -14,7 +15,6 @@ function App() {
   const { t, i18n } = useTranslation();
   const [location, setLocation] = useState(null);
   const [restaurants, setRestaurants] = useState([]);
-  const [filteredRestaurants, setFilteredRestaurants] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [filters, setFilters] = useState({
@@ -37,11 +37,10 @@ function App() {
     }
   }, [i18n.language, location, filters.cuisineTypes, filters.maxDistance]);
 
-  useEffect(() => {
-    if (restaurants.length > 0) {
-      applyFilters();
-    }
-  }, [restaurants, filters.minRating, filters.openNow, filters.minPrice, filters.maxPrice]);
+  const filteredRestaurants = useMemo(
+    () => selectRestaurants(restaurants, filters),
+    [restaurants, filters.minRating, filters.openNow, filters.minPrice, filters.maxPrice]
+  );
 
   const fetchRestaurants = async (userLocation, cuisineFilters = []) => {
     try {
@@ -69,30 +68,6 @@ function App() {
       setError(err.message);
       setLoading(false);
     }
-  };
-
-  const applyFilters = () => {
-    const filtered = restaurants.filter(restaurant => {
-      const ratingMatch = restaurant.rating >= filters.minRating;
-      // Cuisine filtering is now done at API level, so we don't need to filter here
-      const openMatch = !filters.openNow || restaurant.isOpen;
-      
-      // Price range filtering: check if restaurant's price range overlaps with filter range
-      let priceMatch = true;
-      if (restaurant.priceRange) {
-        const restaurantMinPrice = restaurant.priceRange.startPrice;
-        const restaurantMaxPrice = restaurant.priceRange.endPrice;
-        // Check if the restaurant's price range is in the filter range
-        priceMatch = restaurantMinPrice >= filters.minPrice && restaurantMaxPrice <= filters.maxPrice;
-      } else if (filters.minPrice > 0 || filters.maxPrice < 100000) {
-        // If no price data and user has set price filters, exclude this restaurant
-        priceMatch = false;
-      }
-
-      return ratingMatch && openMatch && priceMatch;
-    });
-    
-    setFilteredRestaurants(filtered);
   };
 
   const handleFilterChange = (newFilters) => {
@@ -126,7 +101,6 @@ function App() {
       onReset={() => {
         setError(null);
         setRestaurants([]);
-        setFilteredRestaurants([]);
         initializeApp();
       }}
     >
@@ -140,10 +114,9 @@ function App() {
         </header>
 
         <ErrorBoundary FallbackComponent={ErrorFallback}>
-          <FilterPanel 
-            filters={filters} 
+          <FilterPanel
+            filters={filters}
             onFilterChange={handleFilterChange}
-            restaurants={restaurants}
           />
         </ErrorBoundary>
 

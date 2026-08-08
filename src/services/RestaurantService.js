@@ -237,33 +237,6 @@ class RestaurantService {
     });
   }
 
-  static formatRestaurantData(place, userLocation) {
-    const lat = place.geometry.location.lat();
-    const lng = place.geometry.location.lng();
-    
-    const distance = LocationService.calculateDistance(
-      userLocation.latitude,
-      userLocation.longitude,
-      lat,
-      lng
-    );
-
-    return {
-      id: place.place_id,
-      name: place.name,
-      rating: place.rating || 0,
-      distance: distance,
-      formattedDistance: LocationService.formatDistance(distance),
-      address: place.vicinity,
-      cuisineTypes: this.extractCuisineTypes(place.types),
-      isOpen: place.opening_hours ? place.opening_hours.open_now : true,
-      location: {
-        lat: lat,
-        lng: lng
-      }
-    };
-  }
-
   static formatNewApiRestaurantData(place, userLocation) {
     const lat = place.location.latitude;
     const lng = place.location.longitude;
@@ -403,14 +376,6 @@ class RestaurantService {
     ];
 
     return mockRestaurants;
-  }
-
-  static getCuisineTypes(restaurants) {
-    const cuisineSet = new Set();
-    restaurants.forEach(restaurant => {
-      restaurant.cuisineTypes.forEach(cuisine => cuisineSet.add(cuisine));
-    });
-    return Array.from(cuisineSet).sort();
   }
 }
 
